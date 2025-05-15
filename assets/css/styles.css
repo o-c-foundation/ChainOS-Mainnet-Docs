@@ -290,7 +290,8 @@ tr:nth-child(even) {
 
 .features {
   padding: 3rem 0;
-  margin-top: 2rem;
+  margin-top: 0;
+  background-color: var(--darker-bg);
 }
 
 .features-grid {
@@ -466,7 +467,7 @@ tr:nth-child(even) {
 }
 
 .hero-dashboard {
-  background-color: var(--dark-bg);
+  background-color: var(--darker-bg);
   padding: 0;
   margin-top: -20px;
 }
@@ -478,6 +479,7 @@ tr:nth-child(even) {
   box-shadow: var(--shadow);
   margin: 0 auto;
   max-width: 800px;
+  background-color: var(--darker-bg);
 }
 
 .code-block {
