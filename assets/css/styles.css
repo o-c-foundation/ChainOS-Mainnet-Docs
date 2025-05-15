@@ -469,6 +469,9 @@ tr:nth-child(even) {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: var(--shadow);
+  margin: 0 auto;
+  max-width: 800px;
+  margin-bottom: 2rem;
 }
 
 .code-block {
