@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Security - ChainOS Documentation</title>
+    <meta name="description" content="Best practices for securing ChainOS nodes, including system hardening, key management, and network security.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html" class="active">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>ChainOS Node Security</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">Security Overview</h4>
+                <p>Securing your ChainOS node is critical for maintaining network integrity and protecting your assets. This guide covers best practices for system hardening, key management, and network security.</p>
+            </div>
+
+            <h2 id="security-importance">Why Security Matters</h2>
+            <p>Proper security measures are essential for several reasons:</p>
+            <ul>
+                <li><strong>Asset Protection:</strong> For validators, your staked tokens are at risk if your node is compromised</li>
+                <li><strong>Network Integrity:</strong> Compromised nodes can affect the entire blockchain network</li>
+                <li><strong>Data Privacy:</strong> Protect sensitive information and API access</li>
+                <li><strong>Reputation:</strong> Maintain trust with delegators and the community</li>
+                <li><strong>Availability:</strong> Prevent downtime from security incidents</li>
+            </ul>
+
+            <h2 id="system-security">System Security</h2>
+            <p>Start with securing the underlying operating system:</p>
+
+            <h3 id="operating-system">Operating System Hardening</h3>
+            <div class="card">
+                <h4>Update Regularly</h4>
+                <p>Keep your system updated with security patches:</p>
+                <div class="code-block">
+                    <pre><code># Update package lists
+sudo apt update
+
+# Apply security updates
+sudo apt upgrade -y
+
+# Enable automatic security updates
+sudo apt install unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades</code></pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>Minimize Attack Surface</h4>
+                <p>Remove unnecessary services and packages:</p>
+                <div class="code-block">
+                    <pre><code># List installed packages
+dpkg -l
+
+# Remove unnecessary services
+sudo apt remove --purge apache2 bind9 samba
+
+# Disable unused services
+sudo systemctl disable bluetooth.service
+sudo systemctl disable cups.service</code></pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>User Management</h4>
+                <p>Implement proper user access controls:</p>
+                <div class="code-block">
+                    <pre><code># Create a dedicated user for running ChainOS
+sudo useradd -m -s /bin/bash chainos
+
+# Add to sudo group if necessary (limit this)
+sudo usermod -aG sudo chainos
+
+# Set strong password
+sudo passwd chainos
+
+# Disable root login
+sudo passwd -l root</code></pre>
+                </div>
+            </div>
+
+            <h3 id="ssh-security">SSH Security</h3>
+            <p>Secure SSH access to your server:</p>
+            <div class="code-block">
+                <pre><code># Edit SSH configuration
+sudo nano /etc/ssh/sshd_config
+
+# Recommended settings
+Port 2222                    # Change default port
+PermitRootLogin no           # Disable root login
+PasswordAuthentication no    # Disable password authentication
+PubkeyAuthentication yes     # Enable key-based authentication
+AllowUsers chainos           # Only allow specific users
+MaxAuthTries 3               # Limit authentication attempts
+ClientAliveInterval 300      # Client timeout
+ClientAliveCountMax 2        # Maximum client alive count
+
+# Restart SSH service
+sudo systemctl restart sshd</code></pre>
+            </div>
+
+            <h3 id="firewall-setup">Firewall Configuration</h3>
+            <p>Implement a restrictive firewall policy:</p>
+            <div class="code-block">
+                <pre><code># Install UFW (Uncomplicated Firewall)
+sudo apt install ufw
+
+# Set default policies
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# Allow SSH on custom port
+sudo ufw allow 2222/tcp
+
+# Allow ChainOS P2P port
+sudo ufw allow 26656/tcp
+
+# Allow specific RPC access (if needed)
+sudo ufw allow from 203.0.113.0/24 to any port 26657 proto tcp
+
+# Enable firewall
+sudo ufw enable
+
+# Check status
+sudo ufw status verbose</code></pre>
+            </div>
+
+            <h3 id="fail2ban">Intrusion Prevention with Fail2ban</h3>
+            <p>Install and configure Fail2ban to prevent brute force attacks:</p>
+            <div class="code-block">
+                <pre><code># Install Fail2ban
+sudo apt install fail2ban
+
+# Create a custom configuration
+sudo nano /etc/fail2ban/jail.local
+
+# Add the following configuration
+[sshd]
+enabled = true
+port = 2222
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 3600
+
+# Restart Fail2ban
+sudo systemctl restart fail2ban</code></pre>
+            </div>
+
+            <h2 id="chainos-security">ChainOS-Specific Security</h2>
+            <p>Secure your ChainOS node with these specific measures:</p>
+
+            <h3 id="key-management">Key Management</h3>
+            <p>Properly secure your validator and node keys:</p>
+
+            <div class="card">
+                <h4>Validator Key Security (for validators)</h4>
+                <p>The <code>priv_validator_key.json</code> file is critical for validators:</p>
+                <ul>
+                    <li>Store in a Hardware Security Module (HSM) if possible</li>
+                    <li>Set restrictive file permissions: <code>chmod 400 ~/.chainosd/config/priv_validator_key.json</code></li>
+                    <li>Create encrypted backups stored securely offline</li>
+                    <li>Consider using remote signing setup for additional security</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>Node Key Security</h4>
+                <p>Secure your <code>node_key.json</code> file:</p>
+                <div class="code-block">
+                    <pre><code># Set proper permissions
+chmod 400 ~/.chainosd/config/node_key.json
+
+# Create a secure backup
+tar -czf node_key_backup.tar.gz ~/.chainosd/config/node_key.json
+gpg -c node_key_backup.tar.gz
+mv node_key_backup.tar.gz.gpg /secure-backup-location/</code></pre>
+                </div>
+            </div>
+
+            <h3 id="rpc-security">RPC Security</h3>
+            <p>Secure your RPC endpoints:</p>
+            <div class="code-block">
+                <pre><code># In ~/.chainosd/config/config.toml
+
+# Bind RPC server to localhost only
+[rpc]
+laddr = "tcp://127.0.0.1:26657"
+
+# Limit connections
+max_open_connections = 100
+max_subscription_clients = 10
+max_subscriptions_per_client = 5
+
+# Disable unnecessary CORS
+cors_allowed_origins = []</code></pre>
+            </div>
+
+            <h3 id="api-security">API Security</h3>
+            <p>Secure API endpoints:</p>
+            <div class="code-block">
+                <pre><code># In ~/.chainosd/config/app.toml
+
+# Bind API server to localhost only
+[api]
+address = "tcp://127.0.0.1:1317"
+enable = true
+enabled-unsafe-cors = false
+
+# Bind gRPC server to localhost only
+[grpc]
+address = "127.0.0.1:9090"</code></pre>
+            </div>
+
+            <h3 id="reverse-proxy">Reverse Proxy Setup</h3>
+            <p>Use a reverse proxy for public-facing endpoints:</p>
+            <div class="code-block">
+                <pre><code># Install Nginx
+sudo apt install nginx
+
+# Create Nginx configuration
+sudo nano /etc/nginx/sites-available/chainos
+
+# Add configuration
+server {
+    listen 443 ssl;
+    server_name node.example.com;
+
+    ssl_certificate /etc/letsencrypt/live/node.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/node.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+
+    # Rate limiting
+    limit_req_zone $binary_remote_addr zone=rpc:10m rate=10r/s;
+    limit_req_zone $binary_remote_addr zone=api:10m rate=5r/s;
+
+    # RPC endpoint
+    location /rpc/ {
+        limit_req zone=rpc burst=20 nodelay;
+        proxy_pass http://127.0.0.1:26657/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # REST API endpoint
+    location /api/ {
+        limit_req zone=api burst=10 nodelay;
+        proxy_pass http://127.0.0.1:1317/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Basic auth for certain endpoints
+    location /rpc/net_info {
+        auth_basic "Restricted";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+        proxy_pass http://127.0.0.1:26657/net_info;
+    }
+}
+
+# Enable the site
+sudo ln -s /etc/nginx/sites-available/chainos /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx</code></pre>
+            </div>
+
+            <h2 id="network-security">Network Security</h2>
+            <p>Implement these network security measures:</p>
+
+            <h3 id="sentry-nodes">Sentry Node Architecture</h3>
+            <p>For validators, implement a sentry node architecture to protect your validator node:</p>
+            <div class="card">
+                <h4>Sentry Node Setup</h4>
+                <img src="../assets/sentry-architecture.svg" alt="Sentry Node Architecture" class="diagram">
+                <p>In this setup:</p>
+                <ul>
+                    <li>Validator node is in a private network with no public connections</li>
+                    <li>Sentry nodes are public-facing and relay transactions to the validator</li>
+                    <li>Validator only connects to trusted sentry nodes</li>
+                </ul>
+                <p>Configure your validator's <code>config.toml</code>:</p>
+                <div class="code-block">
+                    <pre><code># Validator node configuration
+[p2p]
+pex = false
+persistent_peers = "sentry_node_id@sentry_node_internal_ip:26656"
+private_peer_ids = ""
+addr_book_strict = false
+unconditional_peer_ids = "sentry_node_id"
+max_num_outbound_peers = 10
+max_num_inbound_peers = 0  # Disable inbound connections</code></pre>
+                </div>
+                <p>Configure your sentry node's <code>config.toml</code>:</p>
+                <div class="code-block">
+                    <pre><code># Sentry node configuration
+[p2p]
+pex = true
+persistent_peers = "validator_node_id@validator_node_internal_ip:26656,other_sentry_node_id@other_sentry_node_ip:26656"
+private_peer_ids = "validator_node_id"  # Keep validator private
+addr_book_strict = false
+unconditional_peer_ids = "validator_node_id"</code></pre>
+                </div>
+            </div>
+
+            <h3 id="ddos-protection">DDoS Protection</h3>
+            <p>Implement DDoS protection measures:</p>
+            <ul>
+                <li>Use cloud DDoS protection services if available</li>
+                <li>Configure rate limiting in your reverse proxy</li>
+                <li>Implement TCP SYN cookies: <code>sysctl -w net.ipv4.tcp_syncookies=1</code></li>
+                <li>Limit simultaneous connections with iptables</li>
+            </ul>
+
+            <h3 id="vpn-setup">VPN for Private Communication</h3>
+            <p>Set up a VPN for secure communication between nodes:</p>
+            <div class="code-block">
+                <pre><code># Install WireGuard
+sudo apt install wireguard
+
+# Generate keys
+wg genkey | tee privatekey | wg pubkey > publickey
+
+# Create WireGuard configuration
+sudo nano /etc/wireguard/wg0.conf
+
+# Example configuration for server
+[Interface]
+PrivateKey = server_private_key
+Address = 10.0.0.1/24
+ListenPort = 51820
+PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+[Peer]
+PublicKey = client_public_key
+AllowedIPs = 10.0.0.2/32
+
+# Enable and start WireGuard
+sudo systemctl enable wg-quick@wg0
+sudo systemctl start wg-quick@wg0</code></pre>
+            </div>
+
+            <h2 id="monitoring-security">Security Monitoring</h2>
+            <p>Implement security monitoring for your node:</p>
+
+            <h3 id="log-monitoring">Log Monitoring</h3>
+            <p>Monitor logs for suspicious activity:</p>
+            <div class="code-block">
+                <pre><code># Install log monitoring tools
+sudo apt install logwatch
+
+# Configure daily email reports
+sudo nano /etc/logwatch/conf/logwatch.conf
+# Set: MailTo = your-email@example.com
+
+# Monitor authentication logs in real-time
+sudo tail -f /var/log/auth.log | grep "Failed password"
+
+# Monitor ChainOS logs
+tail -f ~/.chainosd/logs/chainos.log | grep "ERR"</code></pre>
+            </div>
+
+            <h3 id="intrusion-detection">Intrusion Detection</h3>
+            <p>Set up intrusion detection with OSSEC:</p>
+            <div class="code-block">
+                <pre><code># Install OSSEC
+wget https://github.com/ossec/ossec-hids/archive/3.6.0.tar.gz
+tar -xzf 3.6.0.tar.gz
+cd ossec-hids-3.6.0
+./install.sh
+
+# Follow the installation prompts to set up email notifications
+# and configure which files to monitor</code></pre>
+            </div>
+
+            <h2 id="security-checklist">Security Checklist</h2>
+            <p>Use this checklist to ensure your node is properly secured:</p>
+
+            <div class="card">
+                <h3>System Security</h3>
+                <ul>
+                    <li>☐ Operating system fully updated</li>
+                    <li>☐ Unnecessary services disabled</li>
+                    <li>☐ Strong user password policies</li>
+                    <li>☐ SSH hardened (key-based auth, non-standard port)</li>
+                    <li>☐ Firewall configured with minimal open ports</li>
+                    <li>☐ Fail2ban or similar intrusion prevention installed</li>
+                    <li>☐ Automatic security updates enabled</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>ChainOS Security</h3>
+                <ul>
+                    <li>☐ Validator key properly secured (HSM or restricted permissions)</li>
+                    <li>☐ Node key properly secured</li>
+                    <li>☐ RPC endpoints secured (localhost or authenticated)</li>
+                    <li>☐ API endpoints secured</li>
+                    <li>☐ Reverse proxy with TLS and rate limiting configured</li>
+                    <li>☐ Sentry node architecture implemented (for validators)</li>
+                    <li>☐ Regular key backups stored securely</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Monitoring and Response</h3>
+                <ul>
+                    <li>☐ Log monitoring configured</li>
+                    <li>☐ Intrusion detection system installed</li>
+                    <li>☐ Security alerts set up</li>
+                    <li>☐ Incident response plan documented</li>
+                    <li>☐ Regular security audits scheduled</li>
+                    <li>☐ Backup and recovery procedures tested</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-warning">
+                <h4 class="alert-title">Security is Ongoing</h4>
+                <p>Remember that security is not a one-time setup but an ongoing process. Regularly review and update your security measures as new threats emerge and best practices evolve.</p>
+            </div>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Need Help?</h4>
+                <p>If you need assistance with node security, join our <a href="https://discord.gg/opencrypto" target="_blank">Discord community</a> where our team and other node operators can help.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

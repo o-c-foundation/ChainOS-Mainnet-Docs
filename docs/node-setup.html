@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Setup Guide - ChainOS Documentation</title>
+    <meta name="description" content="Comprehensive guide for setting up and running a ChainOS node on the network.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html" class="active">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html" class="active">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>ChainOS Node Setup Guide</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">Before You Begin</h4>
+                <p>This guide will walk you through the process of setting up a ChainOS node. Make sure you meet the hardware requirements before proceeding.</p>
+            </div>
+
+            <h2 id="hardware-requirements">Hardware Requirements</h2>
+            <p>Running a ChainOS node requires specific hardware specifications to ensure optimal performance:</p>
+            
+            <div class="card">
+                <h3>Minimum Requirements</h3>
+                <ul>
+                    <li><strong>CPU:</strong> 4 cores / 8 threads (3.0+ GHz)</li>
+                    <li><strong>RAM:</strong> 16GB DDR4</li>
+                    <li><strong>Storage:</strong> 500GB NVMe SSD</li>
+                    <li><strong>Network:</strong> 100 Mbps symmetric connection</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>Recommended Specifications</h3>
+                <ul>
+                    <li><strong>CPU:</strong> 8 cores / 16 threads (3.5+ GHz)</li>
+                    <li><strong>RAM:</strong> 32GB DDR4</li>
+                    <li><strong>Storage:</strong> 1TB NVMe SSD</li>
+                    <li><strong>Network:</strong> 1 Gbps symmetric connection</li>
+                </ul>
+                <p class="feature-description">These specifications ensure your node can handle the network load and maintain synchronization with the blockchain.</p>
+            </div>
+
+            <h2 id="installation">Installation</h2>
+            <p>Follow these steps to install and configure your ChainOS node:</p>
+
+            <h3 id="prepare-environment">1. Prepare the Environment</h3>
+            <p>Update your system and install the required dependencies:</p>
+            <div class="code-block">
+                <pre><code># Update system packages
+sudo apt update && sudo apt upgrade -y
+
+# Install dependencies
+sudo apt install -y build-essential curl git jq lz4 unzip</code></pre>
+            </div>
+
+            <h3 id="get-chainos">2. Get ChainOS</h3>
+            <p>Clone the ChainOS repository from GitHub:</p>
+            <div class="code-block">
+                <pre><code># Clone the repository
+git clone https://github.com/o-c-foundation/ChainOS--Mainnet.git
+cd ChainOS--Mainnet</code></pre>
+            </div>
+
+            <h3 id="automated-setup">3. Automated Setup</h3>
+            <p>ChainOS provides a convenient setup script that automates most of the installation process:</p>
+            <div class="code-block">
+                <pre><code># Make the script executable
+chmod +x node-setup.sh
+
+# Run the installer
+./node-setup.sh</code></pre>
+            </div>
+            <p>The setup script will guide you through the following steps:</p>
+            <ul>
+                <li>Initializing your node with a custom moniker</li>
+                <li>Downloading the genesis file</li>
+                <li>Configuring persistent peers</li>
+                <li>Setting up pruning options</li>
+                <li>Creating a systemd service for automatic startup</li>
+            </ul>
+
+            <div class="alert alert-warning">
+                <h4 class="alert-title">Important Note</h4>
+                <p>Make sure to follow the prompts in the setup script carefully. You'll need to provide a unique moniker for your node and decide on configuration options.</p>
+            </div>
+
+            <h3 id="manual-setup">4. Manual Setup (Alternative)</h3>
+            <p>If you prefer to set up your node manually or need more control over the configuration, follow these steps:</p>
+
+            <h4>Initialize the Node</h4>
+            <div class="code-block">
+                <pre><code># Initialize the node with your chosen moniker
+chainosd init "your-node-name" --chain-id chainos-1</code></pre>
+            </div>
+
+            <h4>Download Genesis File</h4>
+            <div class="code-block">
+                <pre><code># Download the genesis file
+curl -s https://chainos.network/genesis.json > ~/.chainosd/config/genesis.json</code></pre>
+            </div>
+
+            <h4>Configure Persistent Peers</h4>
+            <div class="code-block">
+                <pre><code># Edit the config.toml file
+nano ~/.chainosd/config/config.toml
+
+# Add the following persistent peers:
+# persistent_peers = "2b89c755963a03a2a2c846d5efb97c06e6d2cdfe@chainos.network:26656"</code></pre>
+            </div>
+
+            <h4>Configure Pruning (Optional)</h4>
+            <div class="code-block">
+                <pre><code># Edit the app.toml file
+nano ~/.chainosd/config/app.toml
+
+# Set pruning options:
+# pruning = "custom"
+# pruning-keep-recent = "100"
+# pruning-keep-every = "0"
+# pruning-interval = "10"</code></pre>
+            </div>
+
+            <h4>Create Systemd Service</h4>
+            <div class="code-block">
+                <pre><code># Create a systemd service file
+sudo nano /etc/systemd/system/chainosd.service
+
+# Add the following content:
+[Unit]
+Description=ChainOS Node
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which chainosd) start
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+
+# Enable and start the service
+sudo systemctl daemon-reload
+sudo systemctl enable chainosd
+sudo systemctl start chainosd</code></pre>
+            </div>
+
+            <h2 id="node-operation">Node Operation</h2>
+            <p>Once your node is set up, you can use these commands to manage it:</p>
+
+            <h3 id="check-status">Check Node Status</h3>
+            <div class="code-block">
+                <pre><code># Check node status
+chainosd status --node tcp://localhost:26657
+
+# Check sync status
+curl -s localhost:26657/status | jq '.result.sync_info'</code></pre>
+            </div>
+
+            <h3 id="view-logs">View Logs</h3>
+            <div class="code-block">
+                <pre><code># View logs if using systemd
+sudo journalctl -u chainosd -f --output cat
+
+# View logs if running manually
+tail -f ~/.chainosd/logs/chainos.log</code></pre>
+            </div>
+
+            <h3 id="stop-restart">Stop and Restart Node</h3>
+            <div class="code-block">
+                <pre><code># Stop the node
+sudo systemctl stop chainosd
+
+# Start the node
+sudo systemctl start chainosd
+
+# Restart the node
+sudo systemctl restart chainosd</code></pre>
+            </div>
+
+            <h2 id="sync-options">Sync Options</h2>
+            <p>ChainOS offers different synchronization methods to get your node up to speed with the network:</p>
+
+            <h3 id="default-sync">Default Sync</h3>
+            <p>By default, your node will sync from the genesis block, which can take several hours depending on your hardware.</p>
+
+            <h3 id="state-sync">State Sync (Faster)</h3>
+            <p>State sync allows you to quickly sync your node by downloading a recent snapshot of the application state:</p>
+            <div class="code-block">
+                <pre><code># Edit config.toml
+nano ~/.chainosd/config/config.toml
+
+# Enable state sync and configure it:
+[statesync]
+enable = true
+rpc_servers = "chainos.network:26657,chainos-backup.network:26657"
+trust_height = 3500000  # Replace with a recent block height
+trust_hash = "XXXXXX"   # Replace with the hash of the block at trust_height
+trust_period = "168h"   # One week</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <h4 class="alert-title">Getting Trust Hash</h4>
+                <p>You can get the trust hash by running:</p>
+                <code>curl -s "chainos.network:26657/block?height=3500000" | jq -r '.result.block_id.hash'</code>
+                <p>Replace 3500000 with a recent block height.</p>
+            </div>
+
+            <h2 id="troubleshooting">Troubleshooting</h2>
+            <p>Here are some common issues and their solutions:</p>
+
+            <div class="card">
+                <h3>Node Won't Start</h3>
+                <p><strong>Symptoms:</strong> The node fails to start or crashes immediately.</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Check logs for specific errors: <code>sudo journalctl -u chainosd -n 100</code></li>
+                    <li>Verify you have the correct genesis file</li>
+                    <li>Ensure your system meets the minimum hardware requirements</li>
+                    <li>Check disk space: <code>df -h</code></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Node Not Syncing</h3>
+                <p><strong>Symptoms:</strong> The node starts but doesn't sync with the network.</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Verify you have configured persistent peers correctly</li>
+                    <li>Check your internet connection</li>
+                    <li>Ensure ports are open (default: 26656 for p2p)</li>
+                    <li>Try adding more peers from the network</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Out of Memory Errors</h3>
+                <p><strong>Symptoms:</strong> The node crashes with out of memory errors.</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Increase your server's RAM</li>
+                    <li>Configure pruning to reduce state size</li>
+                    <li>Add swap space (not recommended for production nodes)</li>
+                </ul>
+            </div>
+
+            <h2 id="next-steps">Next Steps</h2>
+            <p>Once your node is up and running, you might want to:</p>
+            <ul>
+                <li><a href="validators.html">Become a validator</a> to help secure the network and earn rewards</li>
+                <li>Set up <a href="node-monitoring.html">monitoring</a> to keep track of your node's performance</li>
+                <li>Learn how to use the <a href="cli.html">ChainOS CLI</a> to interact with the blockchain</li>
+                <li>Explore <a href="api.html">API endpoints</a> for developing applications on ChainOS</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Need Help?</h4>
+                <p>If you encounter any issues not covered in this guide, join our <a href="https://discord.gg/opencrypto" target="_blank">Discord community</a> for support from the team and other node operators.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - ChainOS Documentation</title>
+    <meta name="description" content="Comprehensive API reference for ChainOS, including REST, gRPC, and WebSocket endpoints for blockchain interaction.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html" class="active">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>ChainOS API Reference</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">API Overview</h4>
+                <p>ChainOS provides multiple API interfaces for interacting with the blockchain, including REST API, gRPC, and WebSocket endpoints. This reference guide covers the available endpoints, request formats, and response structures.</p>
+            </div>
+
+            <h2 id="api-interfaces">API Interfaces</h2>
+            <p>ChainOS offers three primary API interfaces:</p>
+
+            <div class="card">
+                <h3>REST API</h3>
+                <p>HTTP-based API for easy integration with web applications and services.</p>
+                <ul>
+                    <li><strong>Default Port:</strong> 1317</li>
+                    <li><strong>Content Type:</strong> application/json</li>
+                    <li><strong>Authentication:</strong> None (use over HTTPS with proper access controls)</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>gRPC</h3>
+                <p>High-performance RPC framework for efficient client-server communication.</p>
+                <ul>
+                    <li><strong>Default Port:</strong> 9090</li>
+                    <li><strong>Protocol:</strong> Protocol Buffers over HTTP/2</li>
+                    <li><strong>Authentication:</strong> None (use with TLS and proper access controls)</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>WebSocket (Tendermint RPC)</h3>
+                <p>Real-time event subscription and blockchain interaction.</p>
+                <ul>
+                    <li><strong>Default Port:</strong> 26657</li>
+                    <li><strong>Protocol:</strong> WebSocket</li>
+                    <li><strong>Authentication:</strong> None (use with TLS and proper access controls)</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-warning">
+                <h4 class="alert-title">Security Warning</h4>
+                <p>When exposing API endpoints publicly, always implement proper security measures:</p>
+                <ul>
+                    <li>Use HTTPS/TLS for all connections</li>
+                    <li>Implement rate limiting to prevent abuse</li>
+                    <li>Configure firewall rules to restrict access</li>
+                    <li>Consider using an API gateway for additional security layers</li>
+                </ul>
+            </div>
+
+            <h2 id="rest-api">REST API</h2>
+            <p>The REST API provides HTTP endpoints for querying blockchain data and submitting transactions.</p>
+
+            <h3 id="rest-configuration">Configuration</h3>
+            <p>To enable the REST API, configure the following in your <code>app.toml</code> file:</p>
+            <div class="code-block">
+                <pre><code>[api]
+# Enable defines if the API server should be enabled.
+enable = true
+
+# Address defines the API server to listen on.
+address = "tcp://0.0.0.0:1317"
+
+# EnableUnsafeCORS defines if CORS should be enabled (unsafe - use it at your own risk).
+enabled-unsafe-cors = false</code></pre>
+            </div>
+
+            <h3 id="rest-endpoints">Common Endpoints</h3>
+            <p>Here are the most commonly used REST API endpoints:</p>
+
+            <h4 id="rest-node-info">Node Information</h4>
+            <div class="code-block">
+                <pre><code>GET /node_info</code></pre>
+            </div>
+            <p>Returns information about the connected node.</p>
+            <p><strong>Example Response:</strong></p>
+            <div class="code-block">
+                <pre><code>{
+  "node_info": {
+    "protocol_version": {
+      "p2p": "8",
+      "block": "11",
+      "app": "0"
+    },
+    "id": "2b89c755963a03a2a2c846d5efb97c06e6d2cdfe",
+    "listen_addr": "tcp://0.0.0.0:26656",
+    "network": "chainos-1",
+    "version": "v1.5.05",
+    "channels": "40202122233038606100",
+    "moniker": "ChainOS-Validator",
+    "other": {
+      "tx_index": "on",
+      "rpc_address": "tcp://0.0.0.0:26657"
+    }
+  },
+  "application_version": {
+    "name": "chainosd",
+    "server_name": "chainosd",
+    "version": "v1.5.05",
+    "commit": "a7c6462a7a4f447e7f59c12745ba0645a7c6462a",
+    "build_tags": "netgo,ledger",
+    "go": "go version go1.18.3 linux/amd64"
+  }
+}</code></pre>
+            </div>
+
+            <h4 id="rest-account">Account Information</h4>
+            <div class="code-block">
+                <pre><code>GET /auth/accounts/{address}</code></pre>
+            </div>
+            <p>Returns account information for the specified address.</p>
+            <p><strong>Example Response:</strong></p>
+            <div class="code-block">
+                <pre><code>{
+  "account": {
+    "@type": "/chainos.auth.v1beta1.BaseAccount",
+    "address": "chainos1abcdefghijklmnopqrstuvwxyz0123456789",
+    "pub_key": {
+      "@type": "/chainos.crypto.secp256k1.PubKey",
+      "key": "AzFq8V7Jj7TGqCUF3B3hYVpXsJ9QjMC9UHZ7sBXk8Xvq"
+    },
+    "account_number": "12345",
+    "sequence": "42"
+  }
+}</code></pre>
+            </div>
+
+            <h4 id="rest-balance">Account Balance</h4>
+            <div class="code-block">
+                <pre><code>GET /bank/balances/{address}</code></pre>
+            </div>
+            <p>Returns the balance for the specified address.</p>
+            <p><strong>Example Response:</strong></p>
+            <div class="code-block">
+                <pre><code>{
+  "balances": [
+    {
+      "denom": "uos",
+      "amount": "1000000000"
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}</code></pre>
+            </div>
+
+            <h4 id="rest-tx-submit">Submit Transaction</h4>
+            <div class="code-block">
+                <pre><code>POST /txs
+Content-Type: application/json
+
+{
+  "tx": {
+    "msg": [...],
+    "fee": {
+      "amount": [
+        {
+          "denom": "uos",
+          "amount": "5000"
+        }
+      ],
+      "gas": "200000"
+    },
+    "signatures": [...],
+    "memo": "Transaction memo"
+  },
+  "mode": "block"
+}</code></pre>
+            </div>
+            <p>Submits a signed transaction to the network.</p>
+            <p><strong>Example Response:</strong></p>
+            <div class="code-block">
+                <pre><code>{
+  "height": "123456",
+  "txhash": "ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789",
+  "codespace": "",
+  "code": 0,
+  "data": "0A060A0473656E64",
+  "raw_log": "[{\"events\":[{\"type\":\"message\",\"attributes\":[{\"key\":\"action\",\"value\":\"send\"},{\"key\":\"sender\",\"value\":\"chainos1abcdefghijklmnopqrstuvwxyz0123456789\"},{\"key\":\"module\",\"value\":\"bank\"}]},{\"type\":\"transfer\",\"attributes\":[{\"key\":\"recipient\",\"value\":\"chainos1zyxwvutsrqponmlkjihgfedcba9876543210\"},{\"key\":\"sender\",\"value\":\"chainos1abcdefghijklmnopqrstuvwxyz0123456789\"},{\"key\":\"amount\",\"value\":\"1000000uos\"}]}]}]",
+  "logs": [...],
+  "info": "",
+  "gas_wanted": "200000",
+  "gas_used": "68735",
+  "tx": {...},
+  "timestamp": "2025-05-15T18:30:00Z"
+}</code></pre>
+            </div>
+
+            <h4 id="rest-tx-query">Query Transaction</h4>
+            <div class="code-block">
+                <pre><code>GET /txs/{hash}</code></pre>
+            </div>
+            <p>Returns information about a transaction by its hash.</p>
+
+            <h4 id="rest-validators">List Validators</h4>
+            <div class="code-block">
+                <pre><code>GET /staking/validators</code></pre>
+            </div>
+            <p>Returns the list of validators.</p>
+
+            <h4 id="rest-delegations">Query Delegations</h4>
+            <div class="code-block">
+                <pre><code>GET /staking/delegators/{delegatorAddr}/delegations</code></pre>
+            </div>
+            <p>Returns delegations for a delegator address.</p>
+
+            <h4 id="rest-proposals">List Governance Proposals</h4>
+            <div class="code-block">
+                <pre><code>GET /gov/proposals</code></pre>
+            </div>
+            <p>Returns the list of governance proposals.</p>
+
+            <h3 id="rest-pagination">Pagination</h3>
+            <p>Most list endpoints support pagination using the following query parameters:</p>
+            <ul>
+                <li><code>limit</code>: Maximum number of items to return</li>
+                <li><code>offset</code>: Number of items to skip</li>
+                <li><code>key</code>: Pagination key from a previous response</li>
+                <li><code>count_total</code>: If true, return the total count of items</li>
+                <li><code>reverse</code>: If true, return items in reverse order</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>GET /staking/validators?limit=10&offset=10</code></pre>
+            </div>
+
+            <h2 id="grpc-api">gRPC API</h2>
+            <p>The gRPC API provides high-performance RPC services for interacting with the blockchain.</p>
+
+            <h3 id="grpc-configuration">Configuration</h3>
+            <p>To enable the gRPC server, configure the following in your <code>app.toml</code> file:</p>
+            <div class="code-block">
+                <pre><code>[grpc]
+# Enable defines if the gRPC server should be enabled.
+enable = true
+
+# Address defines the gRPC server address to bind to.
+address = "0.0.0.0:9090"</code></pre>
+            </div>
+
+            <h3 id="grpc-services">Available Services</h3>
+            <p>ChainOS provides the following gRPC services:</p>
+
+            <div class="card">
+                <h4>Auth Service</h4>
+                <p>Account-related queries</p>
+                <ul>
+                    <li><code>Account</code>: Get account information</li>
+                    <li><code>Params</code>: Get auth module parameters</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>Bank Service</h4>
+                <p>Token-related queries</p>
+                <ul>
+                    <li><code>Balance</code>: Get account balance</li>
+                    <li><code>AllBalances</code>: Get all balances for an account</li>
+                    <li><code>TotalSupply</code>: Get total token supply</li>
+                    <li><code>SupplyOf</code>: Get supply of a specific token</li>
+                    <li><code>Params</code>: Get bank module parameters</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>Staking Service</h4>
+                <p>Staking-related queries and transactions</p>
+                <ul>
+                    <li><code>Validators</code>: Get validators list</li>
+                    <li><code>Validator</code>: Get validator information</li>
+                    <li><code>ValidatorDelegations</code>: Get delegations to a validator</li>
+                    <li><code>ValidatorUnbondingDelegations</code>: Get unbonding delegations from a validator</li>
+                    <li><code>Delegation</code>: Get delegation information</li>
+                    <li><code>UnbondingDelegation</code>: Get unbonding delegation information</li>
+                    <li><code>DelegatorDelegations</code>: Get delegations from a delegator</li>
+                    <li><code>DelegatorUnbondingDelegations</code>: Get unbonding delegations from a delegator</li>
+                    <li><code>Redelegations</code>: Get redelegation information</li>
+                    <li><code>DelegatorValidators</code>: Get validators a delegator has delegated to</li>
+                    <li><code>DelegatorValidator</code>: Get validator a delegator has delegated to</li>
+                    <li><code>HistoricalInfo</code>: Get historical information at a given height</li>
+                    <li><code>Pool</code>: Get staking pool information</li>
+                    <li><code>Params</code>: Get staking module parameters</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>Governance Service</h4>
+                <p>Governance-related queries and transactions</p>
+                <ul>
+                    <li><code>Proposal</code>: Get proposal information</li>
+                    <li><code>Proposals</code>: Get proposals list</li>
+                    <li><code>Vote</code>: Get vote information</li>
+                    <li><code>Votes</code>: Get votes for a proposal</li>
+                    <li><code>Params</code>: Get governance module parameters</li>
+                    <li><code>Deposit</code>: Get deposit information</li>
+                    <li><code>Deposits</code>: Get deposits for a proposal</li>
+                    <li><code>TallyResult</code>: Get tally result for a proposal</li>
+                </ul>
+            </div>
+
+            <h3 id="grpc-example">gRPC Example (Using grpcurl)</h3>
+            <p>Here's an example of querying account information using grpcurl:</p>
+            <div class="code-block">
+                <pre><code>grpcurl -plaintext \
+  -d '{"address":"chainos1abcdefghijklmnopqrstuvwxyz0123456789"}' \
+  localhost:9090 \
+  chainos.auth.v1beta1.Query/Account</code></pre>
+            </div>
+
+            <h2 id="websocket-api">WebSocket API</h2>
+            <p>The WebSocket API allows for real-time subscription to blockchain events.</p>
+
+            <h3 id="websocket-configuration">Configuration</h3>
+            <p>The WebSocket API is part of the Tendermint RPC server, configured in <code>config.toml</code>:</p>
+            <div class="code-block">
+                <pre><code>[rpc]
+# TCP or UNIX socket address for the RPC server to listen on
+laddr = "tcp://0.0.0.0:26657"
+
+# A list of origins a cross-domain request can be executed from
+cors_allowed_origins = []
+
+# Maximum number of simultaneous connections
+max_open_connections = 1000
+
+# Maximum number of unique client subscriptions
+max_subscription_clients = 100</code></pre>
+            </div>
+
+            <h3 id="websocket-subscriptions">Event Subscriptions</h3>
+            <p>You can subscribe to various blockchain events using the WebSocket API:</p>
+
+            <div class="code-block">
+                <pre><code>// Connect to WebSocket
+ws = new WebSocket("ws://localhost:26657/websocket");
+
+// Subscribe to new blocks
+ws.send(JSON.stringify({
+  "jsonrpc": "2.0",
+  "method": "subscribe",
+  "id": 1,
+  "params": {
+    "query": "tm.event='NewBlock'"
+  }
+}));</code></pre>
+            </div>
+
+            <h3 id="websocket-events">Available Events</h3>
+            <p>Here are the common events you can subscribe to:</p>
+            <ul>
+                <li><code>NewBlock</code>: Fired when a new block is committed</li>
+                <li><code>Tx</code>: Fired when a transaction is included in a block</li>
+                <li><code>ValidatorSetUpdates</code>: Fired when the validator set changes</li>
+                <li><code>NewBlockHeader</code>: Fired when a new block header is created</li>
+                <li><code>CompleteProposal</code>: Fired when a proposal is complete</li>
+            </ul>
+
+            <p>You can also subscribe to specific transaction events using query conditions:</p>
+            <div class="code-block">
+                <pre><code>// Subscribe to transfer events for a specific address
+ws.send(JSON.stringify({
+  "jsonrpc": "2.0",
+  "method": "subscribe",
+  "id": 2,
+  "params": {
+    "query": "tm.event='Tx' AND transfer.recipient='chainos1abcdefghijklmnopqrstuvwxyz0123456789'"
+  }
+}));</code></pre>
+            </div>
+
+            <h2 id="client-libraries">Client Libraries</h2>
+            <p>ChainOS provides client libraries for various programming languages to simplify API interaction:</p>
+
+            <div class="card">
+                <h3>JavaScript/TypeScript</h3>
+                <p>The official JavaScript client for ChainOS:</p>
+                <div class="code-block">
+                    <pre><code>// Install
+npm install @chainos/client
+
+// Usage example
+import { ChainOSClient } from '@chainos/client';
+
+const client = new ChainOSClient('http://localhost:1317');
+const balance = await client.getBalance('chainos1abcdefghijklmnopqrstuvwxyz0123456789');
+console.log(balance);</code></pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Python</h3>
+                <p>The official Python client for ChainOS:</p>
+                <div class="code-block">
+                    <pre><code># Install
+pip install chainos-client
+
+# Usage example
+from chainos_client import ChainOSClient
+
+client = ChainOSClient('http://localhost:1317')
+balance = client.get_balance('chainos1abcdefghijklmnopqrstuvwxyz0123456789')
+print(balance)</code></pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Go</h3>
+                <p>The official Go client for ChainOS:</p>
+                <div class="code-block">
+                    <pre><code>// Install
+go get github.com/o-c-foundation/chainos-client-go
+
+// Usage example
+package main
+
+import (
+    "fmt"
+    "github.com/o-c-foundation/chainos-client-go"
+)
+
+func main() {
+    client := chainosclient.NewClient("http://localhost:1317")
+    balance, err := client.GetBalance("chainos1abcdefghijklmnopqrstuvwxyz0123456789")
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(balance)
+}</code></pre>
+                </div>
+            </div>
+
+            <h2 id="api-rate-limits">API Rate Limits</h2>
+            <p>To protect your node from abuse, it's recommended to implement rate limiting for public API endpoints:</p>
+
+            <div class="alert alert-info">
+                <h4 class="alert-title">Recommended Rate Limits</h4>
+                <ul>
+                    <li><strong>Query Endpoints:</strong> 100 requests per minute per IP</li>
+                    <li><strong>Transaction Submission:</strong> 20 requests per minute per IP</li>
+                    <li><strong>WebSocket Connections:</strong> 5 connections per IP</li>
+                    <li><strong>WebSocket Subscriptions:</strong> 10 subscriptions per connection</li>
+                </ul>
+            </div>
+
+            <p>Rate limiting can be implemented using a reverse proxy like Nginx or an API gateway.</p>
+
+            <h2 id="api-versioning">API Versioning</h2>
+            <p>ChainOS follows semantic versioning for its APIs:</p>
+            <ul>
+                <li>REST API endpoints are versioned with a prefix (e.g., <code>/v1/bank/balances/{address}</code>)</li>
+                <li>gRPC services are versioned in their package names (e.g., <code>chainos.bank.v1beta1</code>)</li>
+                <li>Breaking changes are only introduced in major version updates</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Need Help?</h4>
+                <p>If you need assistance with the ChainOS API, join our <a href="https://discord.gg/opencrypto" target="_blank">Discord community</a> where our team and other developers can help.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

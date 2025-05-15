@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLI Guide - ChainOS Documentation</title>
+    <meta name="description" content="Comprehensive guide to using the ChainOS Command Line Interface (CLI) for interacting with the blockchain.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html" class="active">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>ChainOS CLI Guide</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">Command Line Interface</h4>
+                <p>The ChainOS CLI provides a powerful interface for interacting with the blockchain, managing wallets, sending transactions, and querying network information.</p>
+            </div>
+
+            <h2 id="installation">Installation & Setup</h2>
+            <p>The ChainOS CLI is included in the main ChainOS repository. To get started:</p>
+
+            <div class="code-block">
+                <pre><code># Clone the repository
+git clone https://github.com/o-c-foundation/ChainOS--Mainnet.git
+cd ChainOS--Mainnet
+
+# Make the CLI script executable
+chmod +x chainos-cli.sh</code></pre>
+            </div>
+
+            <h3 id="configuration">Configuration</h3>
+            <p>The CLI uses the following environment variables which can be configured in your shell or directly in the script:</p>
+            <div class="code-block">
+                <pre><code># Default configuration
+NODE="tcp://chainos.network:26657"  # RPC endpoint
+CHAIN_ID="chainos-1"                # Chain ID
+HOME_DIR="$HOME/.chainosd"          # Configuration directory</code></pre>
+            </div>
+
+            <p>You can customize these variables by editing the script or setting them in your environment:</p>
+            <div class="code-block">
+                <pre><code># Example: Connect to a local node
+export NODE="tcp://localhost:26657"
+export CHAIN_ID="chainos-testnet-1"
+export HOME_DIR="$HOME/.chainosd-testnet"</code></pre>
+            </div>
+
+            <h2 id="basic-usage">Basic Usage</h2>
+            <p>The ChainOS CLI can be used in two modes:</p>
+
+            <h3 id="interactive-mode">Interactive Mode</h3>
+            <p>Launch the CLI in interactive mode to access a menu-driven interface:</p>
+            <div class="code-block">
+                <pre><code>./chainos-cli.sh</code></pre>
+            </div>
+            <p>This will display the main menu with various options:</p>
+            <div class="code-block">
+                <pre><code>===== ChainOS CLI =====
+1) Wallet Management
+2) Transaction Operations
+3) Query Information
+4) Validator Operations
+5) Governance
+6) Advanced Options
+7) Exit
+Enter your choice [1-7]:</code></pre>
+            </div>
+
+            <h3 id="command-mode">Command Mode</h3>
+            <p>Execute specific commands directly from your shell:</p>
+            <div class="code-block">
+                <pre><code>./chainos-cli.sh [command] [subcommand] [arguments]</code></pre>
+            </div>
+            <p>For example:</p>
+            <div class="code-block">
+                <pre><code># Query account balance
+./chainos-cli.sh query balance mywalletname
+
+# Send tokens
+./chainos-cli.sh tx send mywalletname recipient_address 100uos</code></pre>
+            </div>
+
+            <h2 id="wallet-management">Wallet Management</h2>
+            <p>The CLI provides comprehensive wallet management features:</p>
+
+            <h3 id="create-wallet">Create a New Wallet</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 1) Wallet Management > 1) Create New Wallet
+
+# Command mode
+./chainos-cli.sh wallet create mywallet</code></pre>
+            </div>
+            <p>When creating a wallet, you'll receive a 24-word mnemonic phrase. <strong>Important:</strong> Store this phrase securely as it's the only way to recover your wallet!</p>
+
+            <h3 id="recover-wallet">Recover a Wallet</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 1) Wallet Management > 2) Recover Wallet
+
+# Command mode
+./chainos-cli.sh wallet recover mywallet</code></pre>
+            </div>
+            <p>You'll be prompted to enter your 24-word mnemonic phrase.</p>
+
+            <h3 id="list-wallets">List Wallets</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 1) Wallet Management > 3) List Wallets
+
+# Command mode
+./chainos-cli.sh wallet list</code></pre>
+            </div>
+
+            <h3 id="show-address">Show Wallet Address</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 1) Wallet Management > 4) Show Wallet Address
+
+# Command mode
+./chainos-cli.sh wallet show mywallet</code></pre>
+            </div>
+
+            <h3 id="delete-wallet">Delete a Wallet</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 1) Wallet Management > 5) Delete Wallet
+
+# Command mode
+./chainos-cli.sh wallet delete mywallet</code></pre>
+            </div>
+            <p><strong>Warning:</strong> Make sure you have backed up your mnemonic phrase before deleting a wallet!</p>
+
+            <h2 id="transaction-operations">Transaction Operations</h2>
+            <p>The CLI allows you to perform various transaction operations:</p>
+
+            <h3 id="send-tokens">Send Tokens</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 2) Transaction Operations > 1) Send Tokens
+
+# Command mode
+./chainos-cli.sh tx send mywallet chainos1recipient... 100uos --memo "Payment for services"</code></pre>
+            </div>
+            <p>The amount should be specified in uos (microUOS), where 1 UOS = 1,000,000 uos.</p>
+
+            <h3 id="delegate-tokens">Delegate Tokens</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 2) Transaction Operations > 2) Delegate Tokens
+
+# Command mode
+./chainos-cli.sh tx delegate mywallet chainosvaloper1... 1000000uos</code></pre>
+            </div>
+
+            <h3 id="redelegate-tokens">Redelegate Tokens</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 2) Transaction Operations > 3) Redelegate Tokens
+
+# Command mode
+./chainos-cli.sh tx redelegate mywallet src_validator_addr dst_validator_addr 1000000uos</code></pre>
+            </div>
+
+            <h3 id="undelegate-tokens">Undelegate Tokens</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 2) Transaction Operations > 4) Undelegate Tokens
+
+# Command mode
+./chainos-cli.sh tx undelegate mywallet validator_addr 1000000uos</code></pre>
+            </div>
+            <p>Note: Undelegated tokens are subject to a 21-day unbonding period before they become available.</p>
+
+            <h3 id="withdraw-rewards">Withdraw Rewards</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 2) Transaction Operations > 5) Withdraw Rewards
+
+# Command mode
+# Withdraw from a specific validator
+./chainos-cli.sh tx withdraw-rewards mywallet validator_addr
+
+# Withdraw from all validators
+./chainos-cli.sh tx withdraw-all-rewards mywallet</code></pre>
+            </div>
+
+            <h2 id="query-information">Query Information</h2>
+            <p>The CLI provides various query commands to retrieve information from the blockchain:</p>
+
+            <h3 id="query-balance">Query Account Balance</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 3) Query Information > 1) Query Balance
+
+# Command mode
+./chainos-cli.sh query balance mywallet</code></pre>
+            </div>
+
+            <h3 id="query-tx">Query Transaction</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 3) Query Information > 2) Query Transaction
+
+# Command mode
+./chainos-cli.sh query tx HASH</code></pre>
+            </div>
+            <p>Replace HASH with the transaction hash you want to query.</p>
+
+            <h3 id="query-validator">Query Validator</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 3) Query Information > 3) Query Validator
+
+# Command mode
+./chainos-cli.sh query validator chainosvaloper1...</code></pre>
+            </div>
+
+            <h3 id="query-validators">Query All Validators</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 3) Query Information > 4) Query All Validators
+
+# Command mode
+./chainos-cli.sh query validators</code></pre>
+            </div>
+
+            <h3 id="query-delegations">Query Delegations</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 3) Query Information > 5) Query Delegations
+
+# Command mode
+./chainos-cli.sh query delegations mywallet</code></pre>
+            </div>
+
+            <h3 id="query-params">Query Network Parameters</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 3) Query Information > 6) Query Network Parameters
+
+# Command mode
+./chainos-cli.sh query params</code></pre>
+            </div>
+
+            <h2 id="validator-operations">Validator Operations</h2>
+            <p>If you're running a validator node, the CLI provides commands for validator operations:</p>
+
+            <h3 id="create-validator">Create Validator</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 4) Validator Operations > 1) Create Validator
+
+# Command mode
+./chainos-cli.sh tx create-validator \
+  --from mywallet \
+  --amount 1000000uos \
+  --pubkey $(chainosd tendermint show-validator) \
+  --moniker "my-validator-name" \
+  --website "https://myvalidator.com" \
+  --details "My validator description" \
+  --commission-rate 0.10 \
+  --commission-max-rate 0.20 \
+  --commission-max-change-rate 0.01 \
+  --min-self-delegation 1</code></pre>
+            </div>
+
+            <h3 id="edit-validator">Edit Validator</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 4) Validator Operations > 2) Edit Validator
+
+# Command mode
+./chainos-cli.sh tx edit-validator \
+  --from mywallet \
+  --moniker "new-name" \
+  --website "https://newwebsite.com" \
+  --details "New description" \
+  --commission-rate 0.12</code></pre>
+            </div>
+
+            <h3 id="unjail-validator">Unjail Validator</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 4) Validator Operations > 3) Unjail Validator
+
+# Command mode
+./chainos-cli.sh tx unjail --from mywallet</code></pre>
+            </div>
+
+            <h2 id="governance">Governance</h2>
+            <p>Participate in on-chain governance using these commands:</p>
+
+            <h3 id="submit-proposal">Submit Proposal</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 5) Governance > 1) Submit Proposal
+
+# Command mode
+# Text proposal
+./chainos-cli.sh tx submit-proposal \
+  --title "My Proposal" \
+  --description "This is a proposal to..." \
+  --type text \
+  --deposit 10000000uos \
+  --from mywallet
+
+# Parameter change proposal
+./chainos-cli.sh tx submit-proposal param-change proposal.json --from mywallet</code></pre>
+            </div>
+
+            <h3 id="deposit-proposal">Deposit to Proposal</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 5) Governance > 2) Deposit to Proposal
+
+# Command mode
+./chainos-cli.sh tx deposit 1 10000000uos --from mywallet</code></pre>
+            </div>
+
+            <h3 id="vote-proposal">Vote on Proposal</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 5) Governance > 3) Vote on Proposal
+
+# Command mode
+./chainos-cli.sh tx vote 1 yes --from mywallet</code></pre>
+            </div>
+            <p>Vote options: yes, no, no_with_veto, abstain</p>
+
+            <h3 id="query-proposals">Query Proposals</h3>
+            <div class="code-block">
+                <pre><code># Interactive mode
+./chainos-cli.sh
+# Select: 5) Governance > 4) Query Proposals
+
+# Command mode
+# Query all proposals
+./chainos-cli.sh query proposals
+
+# Query specific proposal
+./chainos-cli.sh query proposal 1</code></pre>
+            </div>
+
+            <h2 id="advanced-options">Advanced Options</h2>
+            <p>The CLI also provides advanced functionality for power users:</p>
+
+            <h3 id="multisig">Multisig Transactions</h3>
+            <p>Create and manage multisignature wallets:</p>
+            <div class="code-block">
+                <pre><code># Create a multisig key
+./chainos-cli.sh keys add multisig-wallet --multisig wallet1,wallet2,wallet3 --multisig-threshold 2
+
+# Generate a transaction for signing
+./chainos-cli.sh tx send multisig-wallet recipient 1000000uos --generate-only > unsigned.json
+
+# Sign with first key
+./chainos-cli.sh tx sign unsigned.json --from wallet1 > signed1.json
+
+# Sign with second key
+./chainos-cli.sh tx sign unsigned.json --from wallet2 > signed2.json
+
+# Combine signatures
+./chainos-cli.sh tx multisign unsigned.json multisig-wallet signed1.json signed2.json > signed.json
+
+# Broadcast transaction
+./chainos-cli.sh tx broadcast signed.json</code></pre>
+            </div>
+
+            <h3 id="offline-signing">Offline Signing</h3>
+            <p>Sign transactions offline for enhanced security:</p>
+            <div class="code-block">
+                <pre><code># Generate unsigned transaction
+./chainos-cli.sh tx send mywallet recipient 1000000uos --generate-only > unsigned.json
+
+# Sign transaction offline
+./chainos-cli.sh tx sign unsigned.json --from mywallet --offline > signed.json
+
+# Broadcast signed transaction
+./chainos-cli.sh tx broadcast signed.json</code></pre>
+            </div>
+
+            <h3 id="custom-node">Connect to Custom Node</h3>
+            <p>Specify a custom node for a single command:</p>
+            <div class="code-block">
+                <pre><code>./chainos-cli.sh query balance mywallet --node tcp://custom-node:26657</code></pre>
+            </div>
+
+            <h2 id="troubleshooting">Troubleshooting</h2>
+            <p>Here are solutions to common issues you might encounter:</p>
+
+            <div class="card">
+                <h3>Connection Issues</h3>
+                <p><strong>Symptoms:</strong> "Error: connection refused" or timeout errors</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Verify the node URL is correct</li>
+                    <li>Check if the node is running and accessible</li>
+                    <li>Try connecting to a different node: <code>--node tcp://alternate-node:26657</code></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Insufficient Funds</h3>
+                <p><strong>Symptoms:</strong> "insufficient funds" error when sending transactions</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Check your balance: <code>./chainos-cli.sh query balance mywallet</code></li>
+                    <li>Remember to account for transaction fees</li>
+                    <li>Ensure you're not trying to send your entire balance without leaving funds for fees</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Out of Gas</h3>
+                <p><strong>Symptoms:</strong> "out of gas" errors</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Increase the gas limit: <code>--gas 200000</code></li>
+                    <li>Use auto gas estimation: <code>--gas auto</code></li>
+                    <li>Adjust the gas prices: <code>--gas-prices 0.025uos</code></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Account Sequence Mismatch</h3>
+                <p><strong>Symptoms:</strong> "account sequence mismatch" errors</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Wait for previous transaction to be processed</li>
+                    <li>Reset your account sequence: <code>--sequence [number]</code></li>
+                    <li>Query your account to get the correct sequence: <code>./chainos-cli.sh query account mywallet</code></li>
+                </ul>
+            </div>
+
+            <h2 id="cli-reference">CLI Reference</h2>
+            <p>Here's a quick reference of commonly used commands:</p>
+
+            <div class="code-block">
+                <pre><code># Wallet Management
+./chainos-cli.sh wallet create WALLET_NAME
+./chainos-cli.sh wallet recover WALLET_NAME
+./chainos-cli.sh wallet list
+./chainos-cli.sh wallet show WALLET_NAME
+./chainos-cli.sh wallet delete WALLET_NAME
+
+# Transactions
+./chainos-cli.sh tx send WALLET_NAME TO_ADDRESS AMOUNT
+./chainos-cli.sh tx delegate WALLET_NAME VALIDATOR_ADDRESS AMOUNT
+./chainos-cli.sh tx redelegate WALLET_NAME SRC_VAL DST_VAL AMOUNT
+./chainos-cli.sh tx undelegate WALLET_NAME VALIDATOR_ADDRESS AMOUNT
+./chainos-cli.sh tx withdraw-rewards WALLET_NAME VALIDATOR_ADDRESS
+./chainos-cli.sh tx withdraw-all-rewards WALLET_NAME
+
+# Queries
+./chainos-cli.sh query balance WALLET_NAME
+./chainos-cli.sh query tx TX_HASH
+./chainos-cli.sh query validator VALIDATOR_ADDRESS
+./chainos-cli.sh query validators
+./chainos-cli.sh query delegations WALLET_NAME
+./chainos-cli.sh query params
+
+# Validator Operations
+./chainos-cli.sh tx create-validator [OPTIONS]
+./chainos-cli.sh tx edit-validator [OPTIONS]
+./chainos-cli.sh tx unjail --from WALLET_NAME
+
+# Governance
+./chainos-cli.sh tx submit-proposal [OPTIONS]
+./chainos-cli.sh tx deposit PROPOSAL_ID AMOUNT --from WALLET_NAME
+./chainos-cli.sh tx vote PROPOSAL_ID VOTE_OPTION --from WALLET_NAME
+./chainos-cli.sh query proposals
+./chainos-cli.sh query proposal PROPOSAL_ID</code></pre>
+            </div>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Need Help?</h4>
+                <p>If you encounter any issues not covered in this guide, join our <a href="https://discord.gg/opencrypto" target="_blank">Discord community</a> for support from the team and other users.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

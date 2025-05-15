@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - ChainOS Documentation</title>
+    <meta name="description" content="Introduction to ChainOS, a high-performance blockchain platform with advanced consensus mechanisms.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html" class="active">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html" class="active">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>Introduction to ChainOS</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">Welcome to ChainOS</h4>
+                <p>ChainOS is a revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms designed for enterprise and decentralized applications.</p>
+            </div>
+
+            <h2 id="what-is-chainos">What is ChainOS?</h2>
+            <p>ChainOS is a next-generation blockchain platform that combines high performance, advanced security, and developer-friendly features. Built on a modified Tendermint consensus engine, ChainOS delivers exceptional transaction throughput while maintaining decentralization and security.</p>
+
+            <div class="card">
+                <h3>Key Highlights</h3>
+                <ul>
+                    <li><strong>Performance:</strong> Process up to 8,750 transactions per second</li>
+                    <li><strong>Speed:</strong> 2.37-second block times with 4.5-second finality</li>
+                    <li><strong>Security:</strong> Advanced cryptographic primitives including Ed25519 signatures and BLS aggregation</li>
+                    <li><strong>Efficiency:</strong> 99.9% less energy consumption than Bitcoin</li>
+                    <li><strong>Developer-Friendly:</strong> Comprehensive SDK and interactive CLI</li>
+                </ul>
+            </div>
+
+            <h2 id="use-cases">Use Cases</h2>
+            <p>ChainOS is designed to support a wide range of applications across various industries:</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3 class="feature-title">DeFi Applications</h3>
+                    <p class="feature-description">Build decentralized exchanges, lending platforms, and yield farming applications with high throughput and low fees.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3 class="feature-title">Enterprise Solutions</h3>
+                    <p class="feature-description">Implement supply chain tracking, identity management, and cross-border payment systems with privacy features.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3 class="feature-title">Gaming & NFTs</h3>
+                    <p class="feature-description">Create blockchain games, NFT marketplaces, and metaverse applications with fast transaction confirmation.</p>
+                </div>
+            </div>
+
+            <h2 id="network-overview">Network Overview</h2>
+            <p>The ChainOS network consists of several key components:</p>
+
+            <h3 id="validators">Validators</h3>
+            <p>A set of 100 validators secure the network through Delegated Proof-of-Stake consensus. Validators:</p>
+            <ul>
+                <li>Propose and validate blocks</li>
+                <li>Participate in governance decisions</li>
+                <li>Earn rewards for securing the network</li>
+            </ul>
+            <p>Learn more about <a href="validators.html">becoming a validator</a>.</p>
+
+            <h3 id="nodes">Full Nodes</h3>
+            <p>Full nodes maintain a complete copy of the blockchain and help relay transactions. They:</p>
+            <ul>
+                <li>Verify transaction validity</li>
+                <li>Serve API requests from applications</li>
+                <li>Provide blockchain data to light clients</li>
+            </ul>
+            <p>Learn how to <a href="node-setup.html">set up a node</a>.</p>
+
+            <h3 id="token">UOS Token</h3>
+            <p>The native token of the ChainOS network is UOS (Universal Operating System). UOS tokens are used for:</p>
+            <ul>
+                <li>Transaction fees</li>
+                <li>Staking and validation</li>
+                <li>Governance voting</li>
+                <li>Protocol-level rewards</li>
+            </ul>
+
+            <h2 id="getting-started">Getting Started</h2>
+            <p>There are several ways to get started with ChainOS depending on your goals:</p>
+
+            <h3 id="run-node">Run a Node</h3>
+            <p>If you want to participate in the network by running infrastructure:</p>
+            <div class="code-block">
+                <pre><code># Clone the repository
+git clone https://github.com/o-c-foundation/ChainOS--Mainnet.git
+cd ChainOS--Mainnet
+
+# Run the node setup script
+chmod +x node-setup.sh
+./node-setup.sh</code></pre>
+            </div>
+            <p>Follow our <a href="node-setup.html">detailed node setup guide</a> for complete instructions.</p>
+
+            <h3 id="use-cli">Use the CLI</h3>
+            <p>The ChainOS CLI provides an interactive interface for managing wallets, sending transactions, and querying the blockchain:</p>
+            <div class="code-block">
+                <pre><code># Start the CLI in interactive mode
+./chainos-cli.sh
+
+# Or execute commands directly
+./chainos-cli.sh wallet create mywallet
+./chainos-cli.sh query balance mywallet</code></pre>
+            </div>
+            <p>Check out the <a href="cli.html">CLI guide</a> for more information.</p>
+
+            <h3 id="develop">Develop on ChainOS</h3>
+            <p>Developers can build applications on ChainOS using various tools and APIs:</p>
+            <ul>
+                <li><strong>REST API:</strong> Interact with the blockchain using HTTP requests</li>
+                <li><strong>RPC API:</strong> Direct access to node functionality</li>
+                <li><strong>WebSocket:</strong> Subscribe to real-time blockchain events</li>
+                <li><strong>SDK:</strong> Build applications using the ChainOS SDK</li>
+            </ul>
+            <p>See our <a href="api.html">API reference</a> to get started with development.</p>
+
+            <h2 id="architecture">Architecture</h2>
+            <p>ChainOS implements a multi-layered architecture that facilitates horizontal scalability:</p>
+            <div class="code-block">
+                <pre><code>┌───────────────────────────────────────────────────────────┐
+│                    Application Layer                       │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│   │ Transaction │  │   Smart     │  │ State Transition │   │
+│   │  Execution  │  │  Contracts  │  │     Engine      │   │
+│   └─────────────┘  └─────────────┘  └─────────────────┘   │
+├───────────────────────────────────────────────────────────┤
+│                    Consensus Layer                         │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│   │  Tendermint │  │ Probabilistic│  │  Byzantine Fault │   │
+│   │     BFT     │  │  Finality   │  │     Tolerance    │   │
+│   └─────────────┘  └─────────────┘  └─────────────────┘   │
+├───────────────────────────────────────────────────────────┤
+│                    Networking Layer                        │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│   │  P2P Mesh   │  │  Libp2p     │  │  Gossip Protocol│   │
+│   │  Network    │  │  Subsystem  │  │   Implementation │   │
+│   └─────────────┘  └─────────────┘  └─────────────────┘   │
+├───────────────────────────────────────────────────────────┤
+│                    Persistence Layer                       │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│   │  LevelDB    │  │ Merkleized  │  │  IAVL+ Tree     │   │
+│   │  Storage    │  │   State     │  │  Implementation  │   │
+│   └─────────────┘  └─────────────┘  └─────────────────┘   │
+└───────────────────────────────────────────────────────────┘</code></pre>
+            </div>
+            <p>Learn more about the <a href="architecture.html">ChainOS architecture</a>.</p>
+
+            <h2 id="community">Join the Community</h2>
+            <p>ChainOS has a vibrant community of developers, validators, and users. Join us to stay updated and get help:</p>
+            <div class="social-links" style="margin-bottom: 1.5rem;">
+                <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+                <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i> Discord</a>
+                <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
+                <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+
+            <h2 id="next-steps">Next Steps</h2>
+            <p>Ready to dive deeper into ChainOS? Here are some recommended next steps:</p>
+            <ul>
+                <li>Learn about the <a href="architecture.html">ChainOS architecture</a></li>
+                <li>Set up your own <a href="node-setup.html">ChainOS node</a></li>
+                <li>Explore how to <a href="validators.html">become a validator</a></li>
+                <li>Check out the <a href="cli.html">CLI guide</a> for interacting with the blockchain</li>
+                <li>Review the <a href="api.html">API reference</a> for development</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Need Help?</h4>
+                <p>If you have any questions or need assistance, join our <a href="https://discord.gg/opencrypto" target="_blank">Discord community</a> where our team and community members can help you get started.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

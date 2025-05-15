@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Monitoring - ChainOS Documentation</title>
+    <meta name="description" content="Comprehensive guide for monitoring ChainOS nodes, including metrics, alerts, and visualization tools.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html" class="active">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>ChainOS Node Monitoring</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">Monitoring Overview</h4>
+                <p>Effective monitoring is essential for maintaining reliable ChainOS nodes. This guide covers monitoring setup, important metrics, alerting, and visualization tools.</p>
+            </div>
+
+            <h2 id="monitoring-importance">Why Monitor Your Node?</h2>
+            <p>Proper monitoring provides several benefits:</p>
+            <ul>
+                <li><strong>Proactive Issue Detection:</strong> Identify and address problems before they cause downtime</li>
+                <li><strong>Performance Optimization:</strong> Analyze resource usage patterns to optimize your configuration</li>
+                <li><strong>Security:</strong> Detect unusual activity that might indicate security issues</li>
+                <li><strong>Compliance:</strong> For validators, ensure you're meeting uptime requirements</li>
+                <li><strong>Capacity Planning:</strong> Track growth trends to plan for hardware upgrades</li>
+            </ul>
+
+            <h2 id="monitoring-stack">Monitoring Stack</h2>
+            <p>We recommend the following monitoring stack for ChainOS nodes:</p>
+
+            <div class="card">
+                <h3>Recommended Components</h3>
+                <ul>
+                    <li><strong>Prometheus:</strong> Time-series database for metrics collection</li>
+                    <li><strong>Node Exporter:</strong> System metrics exporter for Linux servers</li>
+                    <li><strong>ChainOS Exporter:</strong> Custom metrics exporter for ChainOS-specific metrics</li>
+                    <li><strong>Grafana:</strong> Visualization and dashboarding platform</li>
+                    <li><strong>Alertmanager:</strong> Alert handling and notification system</li>
+                </ul>
+            </div>
+
+            <h2 id="installation">Installation and Setup</h2>
+            <p>Follow these steps to set up a comprehensive monitoring system:</p>
+
+            <h3 id="prometheus-setup">Prometheus Setup</h3>
+            <div class="code-block">
+                <pre><code># Install Prometheus
+wget https://github.com/prometheus/prometheus/releases/download/v2.40.0/prometheus-2.40.0.linux-amd64.tar.gz
+tar xvfz prometheus-2.40.0.linux-amd64.tar.gz
+cd prometheus-2.40.0.linux-amd64/
+
+# Create a Prometheus configuration file
+cat > prometheus.yml << EOF
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - localhost:9093
+
+rule_files:
+  - "rules/*.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  - job_name: 'chainos'
+    static_configs:
+      - targets: ['localhost:26660']
+EOF
+
+# Create a systemd service file
+sudo tee /etc/systemd/system/prometheus.service > /dev/null << EOF
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus \\
+    --config.file=/etc/prometheus/prometheus.yml \\
+    --storage.tsdb.path=/var/lib/prometheus/ \\
+    --web.console.templates=/etc/prometheus/consoles \\
+    --web.console.libraries=/etc/prometheus/console_libraries
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Create prometheus user and directories
+sudo useradd --no-create-home --shell /bin/false prometheus
+sudo mkdir -p /etc/prometheus /var/lib/prometheus
+sudo cp -r prometheus promtool consoles console_libraries /usr/local/bin/
+sudo cp -r prometheus.yml /etc/prometheus/
+sudo chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
+sudo chown prometheus:prometheus /usr/local/bin/{prometheus,promtool}
+
+# Start and enable Prometheus
+sudo systemctl daemon-reload
+sudo systemctl start prometheus
+sudo systemctl enable prometheus</code></pre>
+            </div>
+
+            <h3 id="node-exporter-setup">Node Exporter Setup</h3>
+            <div class="code-block">
+                <pre><code># Install Node Exporter
+wget https://github.com/prometheus/node_exporter/releases/download/v1.4.0/node_exporter-1.4.0.linux-amd64.tar.gz
+tar xvfz node_exporter-1.4.0.linux-amd64.tar.gz
+cd node_exporter-1.4.0.linux-amd64/
+
+# Create a systemd service file
+sudo tee /etc/systemd/system/node_exporter.service > /dev/null << EOF
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Create node_exporter user
+sudo useradd --no-create-home --shell /bin/false node_exporter
+sudo cp node_exporter /usr/local/bin/
+sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+
+# Start and enable Node Exporter
+sudo systemctl daemon-reload
+sudo systemctl start node_exporter
+sudo systemctl enable node_exporter</code></pre>
+            </div>
+
+            <h3 id="chainos-metrics">ChainOS Metrics Configuration</h3>
+            <p>ChainOS exposes metrics via a Prometheus endpoint. Enable it in your <code>config.toml</code> file:</p>
+            <div class="code-block">
+                <pre><code># In ~/.chainosd/config/config.toml
+[instrumentation]
+prometheus = true
+prometheus_listen_addr = ":26660"
+namespace = "chainos"</code></pre>
+            </div>
+
+            <h3 id="grafana-setup">Grafana Setup</h3>
+            <div class="code-block">
+                <pre><code># Install Grafana
+sudo apt-get install -y apt-transport-https software-properties-common
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+sudo apt-get update
+sudo apt-get install -y grafana
+
+# Start and enable Grafana
+sudo systemctl start grafana-server
+sudo systemctl enable grafana-server</code></pre>
+            </div>
+
+            <h3 id="alertmanager-setup">Alertmanager Setup</h3>
+            <div class="code-block">
+                <pre><code># Install Alertmanager
+wget https://github.com/prometheus/alertmanager/releases/download/v0.24.0/alertmanager-0.24.0.linux-amd64.tar.gz
+tar xvfz alertmanager-0.24.0.linux-amd64.tar.gz
+cd alertmanager-0.24.0.linux-amd64/
+
+# Create Alertmanager configuration
+cat > alertmanager.yml << EOF
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alertmanager@example.com'
+  smtp_auth_username: 'your-email@gmail.com'
+  smtp_auth_password: 'your-password'
+  smtp_require_tls: true
+
+route:
+  group_by: ['alertname', 'instance']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'email'
+
+receivers:
+- name: 'email'
+  email_configs:
+  - to: 'your-email@example.com'
+    send_resolved: true
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+EOF
+
+# Create a systemd service file
+sudo tee /etc/systemd/system/alertmanager.service > /dev/null << EOF
+[Unit]
+Description=Alertmanager
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=alertmanager
+Group=alertmanager
+Type=simple
+ExecStart=/usr/local/bin/alertmanager \\
+    --config.file=/etc/alertmanager/alertmanager.yml \\
+    --storage.path=/var/lib/alertmanager
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Create alertmanager user and directories
+sudo useradd --no-create-home --shell /bin/false alertmanager
+sudo mkdir -p /etc/alertmanager /var/lib/alertmanager
+sudo cp alertmanager /usr/local/bin/
+sudo cp alertmanager.yml /etc/alertmanager/
+sudo chown -R alertmanager:alertmanager /etc/alertmanager /var/lib/alertmanager
+sudo chown alertmanager:alertmanager /usr/local/bin/alertmanager
+
+# Start and enable Alertmanager
+sudo systemctl daemon-reload
+sudo systemctl start alertmanager
+sudo systemctl enable alertmanager</code></pre>
+            </div>
+
+            <h2 id="important-metrics">Important Metrics to Monitor</h2>
+            <p>Here are the key metrics you should monitor for your ChainOS node:</p>
+
+            <h3 id="system-metrics">System Metrics</h3>
+            <div class="card">
+                <h4>CPU Usage</h4>
+                <p>Monitor CPU utilization to ensure your node has sufficient processing power:</p>
+                <div class="code-block">
+                    <pre><code>rate(node_cpu_seconds_total{mode!="idle"}[1m])</code></pre>
+                </div>
+                <p><strong>Alert threshold:</strong> >80% sustained for 5 minutes</p>
+            </div>
+
+            <div class="card">
+                <h4>Memory Usage</h4>
+                <p>Track memory usage to prevent swapping and OOM kills:</p>
+                <div class="code-block">
+                    <pre><code>node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100</code></pre>
+                </div>
+                <p><strong>Alert threshold:</strong> <10% available memory for 5 minutes</p>
+            </div>
+
+            <div class="card">
+                <h4>Disk Usage</h4>
+                <p>Monitor disk space to prevent running out of storage:</p>
+                <div class="code-block">
+                    <pre><code>node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} * 100</code></pre>
+                </div>
+                <p><strong>Alert threshold:</strong> <10% available space</p>
+            </div>
+
+            <div class="card">
+                <h4>Disk I/O</h4>
+                <p>Track disk I/O to identify potential bottlenecks:</p>
+                <div class="code-block">
+                    <pre><code>rate(node_disk_io_time_seconds_total[1m]) * 100</code></pre>
+                </div>
+                <p><strong>Alert threshold:</strong> >80% disk utilization for 15 minutes</p>
+            </div>
+
+            <div class="card">
+                <h4>Network Traffic</h4>
+                <p>Monitor network traffic to ensure sufficient bandwidth:</p>
+                <div class="code-block">
+                    <pre><code>rate(node_network_receive_bytes_total{device!="lo"}[1m])
+rate(node_network_transmit_bytes_total{device!="lo"}[1m])</code></pre>
+                </div>
+                <p><strong>Alert threshold:</strong> >80% of available bandwidth</p>
+            </div>
+
+            <h3 id="chainos-metrics-list">ChainOS-Specific Metrics</h3>
+            <div class="card">
+                <h4>Node Sync Status</h4>
+                <p>Track whether your node is in sync with the network:</p>
+                <div class="code-block">
+                    <pre><code>chainos_consensus_height
+chainos_p2p_peers</code></pre>
+                </div>
+                <p><strong>Alert threshold:</strong> Height not increasing for 5 minutes or peer count <3</p>
+            </div>
+
+            <div class="card">
+                <h4>Validator Performance (for validators)</h4>
+                <p>Monitor validator signing performance:</p>
+                <div class="code-block">
+                    <pre><code>chainos_consensus_validator_missed_blocks
+chainos_consensus_validator_power</code></pre>
+                </div>
+                <p><strong>Alert threshold:</strong> Any missed blocks or power change</p>
+            </div>
+
+            <div class="card">
+                <h4>Transaction Throughput</h4>
+                <p>Monitor transaction processing:</p>
+                <div class="code-block">
+                    <pre><code>rate(chainos_mempool_size[5m])
+rate(chainos_mempool_tx_size_bytes[5m])</code></pre>
+                </div>
+                <p><strong>Alert threshold:</strong> Mempool size consistently growing</p>
+            </div>
+
+            <div class="card">
+                <h4>Consensus Rounds</h4>
+                <p>Track consensus performance:</p>
+                <div class="code-block">
+                    <pre><code>chainos_consensus_rounds
+chainos_consensus_num_txs</code></pre>
+                </div>
+                <p><strong>Alert threshold:</strong> Multiple rounds per block</p>
+            </div>
+
+            <h2 id="alert-rules">Alert Rules</h2>
+            <p>Create a Prometheus alert rules file to notify you of important issues:</p>
+            <div class="code-block">
+                <pre><code># /etc/prometheus/rules/chainos_alerts.yml
+groups:
+- name: chainos
+  rules:
+  - alert: NodeExporterDown
+    expr: up{job="node_exporter"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Node Exporter down on {{ $labels.instance }}"
+      description: "Node Exporter has been down for more than 5 minutes."
+
+  - alert: ChainOSNodeDown
+    expr: up{job="chainos"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "ChainOS node down on {{ $labels.instance }}"
+      description: "ChainOS node has been down for more than 5 minutes."
+
+  - alert: ChainOSNodeNotSyncing
+    expr: increase(chainos_consensus_height[10m]) < 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "ChainOS node not syncing on {{ $labels.instance }}"
+      description: "ChainOS node has not increased in height for 10 minutes."
+
+  - alert: LowPeerCount
+    expr: chainos_p2p_peers < 3
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Low peer count on {{ $labels.instance }}"
+      description: "ChainOS node has less than 3 peers."
+
+  - alert: HighCPULoad
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU load on {{ $labels.instance }}"
+      description: "CPU load is above 80% for 5 minutes."
+
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 90
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage on {{ $labels.instance }}"
+      description: "Memory usage is above 90% for 5 minutes."
+
+  - alert: DiskSpaceRunningOut
+    expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} * 100 < 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Disk space running out on {{ $labels.instance }}"
+      description: "Disk space is below 10%."
+
+  - alert: ValidatorMissedBlocks
+    expr: increase(chainos_consensus_validator_missed_blocks[1h]) > 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Validator missed blocks on {{ $labels.instance }}"
+      description: "Validator has missed blocks in the last hour."</code></pre>
+            </div>
+
+            <h2 id="grafana-dashboards">Grafana Dashboards</h2>
+            <p>Set up Grafana dashboards to visualize your metrics:</p>
+
+            <h3 id="dashboard-setup">Setting Up Dashboards</h3>
+            <ol>
+                <li>Access Grafana at <code>http://your-server-ip:3000</code> (default credentials: admin/admin)</li>
+                <li>Add Prometheus as a data source:
+                    <ul>
+                        <li>Go to Configuration > Data Sources > Add data source</li>
+                        <li>Select Prometheus</li>
+                        <li>Set URL to <code>http://localhost:9090</code></li>
+                        <li>Click "Save & Test"</li>
+                    </ul>
+                </li>
+                <li>Import dashboards:
+                    <ul>
+                        <li>Go to Create > Import</li>
+                        <li>Enter dashboard ID or upload JSON file</li>
+                        <li>Select your Prometheus data source</li>
+                        <li>Click "Import"</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3 id="recommended-dashboards">Recommended Dashboards</h3>
+            <p>Here are some recommended Grafana dashboards for ChainOS monitoring:</p>
+            <ul>
+                <li><strong>Node Exporter Dashboard:</strong> ID 1860 - System metrics</li>
+                <li><strong>ChainOS Node Dashboard:</strong> Available in our GitHub repository</li>
+                <li><strong>Validator Dashboard:</strong> Available in our GitHub repository</li>
+            </ul>
+
+            <div class="alert alert-info">
+                <h4 class="alert-title">Dashboard JSON Files</h4>
+                <p>You can find our custom Grafana dashboard JSON files in the <a href="https://github.com/o-c-foundation/ChainOS--Mainnet/tree/main/monitoring" target="_blank">monitoring directory</a> of our GitHub repository.</p>
+            </div>
+
+            <h2 id="notification-channels">Notification Channels</h2>
+            <p>Configure Alertmanager to send notifications through various channels:</p>
+
+            <h3 id="email-notifications">Email Notifications</h3>
+            <p>Configure email notifications in Alertmanager:</p>
+            <div class="code-block">
+                <pre><code>global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alertmanager@example.com'
+  smtp_auth_username: 'your-email@gmail.com'
+  smtp_auth_password: 'your-password'
+  smtp_require_tls: true
+
+receivers:
+- name: 'email'
+  email_configs:
+  - to: 'your-email@example.com'
+    send_resolved: true</code></pre>
+            </div>
+
+            <h3 id="slack-notifications">Slack Notifications</h3>
+            <p>Configure Slack notifications in Alertmanager:</p>
+            <div class="code-block">
+                <pre><code>receivers:
+- name: 'slack'
+  slack_configs:
+  - api_url: 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
+    channel: '#monitoring'
+    send_resolved: true</code></pre>
+            </div>
+
+            <h3 id="telegram-notifications">Telegram Notifications</h3>
+            <p>Configure Telegram notifications in Alertmanager:</p>
+            <div class="code-block">
+                <pre><code>receivers:
+- name: 'telegram'
+  telegram_configs:
+  - bot_token: 'your-telegram-bot-token'
+    chat_id: 123456789
+    parse_mode: 'HTML'
+    send_resolved: true</code></pre>
+            </div>
+
+            <h2 id="monitoring-best-practices">Monitoring Best Practices</h2>
+            <p>Follow these best practices for effective node monitoring:</p>
+
+            <div class="card">
+                <h3>Tiered Alert Severity</h3>
+                <p>Categorize alerts by severity to prioritize responses:</p>
+                <ul>
+                    <li><strong>Critical:</strong> Immediate action required (node down, missed blocks)</li>
+                    <li><strong>Warning:</strong> Potential issues that need attention soon</li>
+                    <li><strong>Info:</strong> Informational alerts for awareness</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Alert Fatigue Prevention</h3>
+                <p>Avoid alert fatigue with these strategies:</p>
+                <ul>
+                    <li>Set appropriate thresholds to avoid false positives</li>
+                    <li>Group related alerts to reduce notification volume</li>
+                    <li>Implement alert silencing during maintenance windows</li>
+                    <li>Use different notification channels for different severity levels</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Monitoring Security</h3>
+                <p>Secure your monitoring infrastructure:</p>
+                <ul>
+                    <li>Use TLS for all monitoring endpoints</li>
+                    <li>Implement authentication for Grafana and Prometheus</li>
+                    <li>Restrict access to monitoring ports with firewall rules</li>
+                    <li>Regularly update monitoring tools</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Need Help?</h4>
+                <p>If you need assistance with node monitoring, join our <a href="https://discord.gg/opencrypto" target="_blank">Discord community</a> where our team and other node operators can help.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

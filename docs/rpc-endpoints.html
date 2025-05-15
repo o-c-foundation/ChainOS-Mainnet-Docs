@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPC Endpoints - ChainOS Documentation</title>
+    <meta name="description" content="Complete reference for ChainOS RPC endpoints, including Tendermint RPC and custom endpoints.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html" class="active">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>ChainOS RPC Endpoints</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">RPC Overview</h4>
+                <p>ChainOS provides a comprehensive set of RPC endpoints for interacting with the blockchain. This reference covers the available endpoints, their parameters, and response formats.</p>
+            </div>
+
+            <h2 id="rpc-basics">RPC Basics</h2>
+            <p>The ChainOS RPC server is based on Tendermint RPC and provides HTTP and WebSocket interfaces:</p>
+            <ul>
+                <li><strong>Default Port:</strong> 26657</li>
+                <li><strong>HTTP Endpoint:</strong> <code>http://node-address:26657</code></li>
+                <li><strong>WebSocket Endpoint:</strong> <code>ws://node-address:26657/websocket</code></li>
+            </ul>
+
+            <h3 id="rpc-configuration">Configuration</h3>
+            <p>The RPC server is configured in the <code>config.toml</code> file:</p>
+            <div class="code-block">
+                <pre><code>[rpc]
+# TCP or UNIX socket address for the RPC server to listen on
+laddr = "tcp://0.0.0.0:26657"
+
+# A list of origins a cross-domain request can be executed from
+cors_allowed_origins = []
+
+# Maximum number of simultaneous connections
+max_open_connections = 1000
+
+# Maximum number of unique client subscriptions
+max_subscription_clients = 100</code></pre>
+            </div>
+
+            <h3 id="request-format">Request Format</h3>
+            <p>RPC requests follow the JSON-RPC 2.0 specification:</p>
+            <div class="code-block">
+                <pre><code>{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "method_name",
+  "params": {
+    "param1": "value1",
+    "param2": "value2"
+  }
+}</code></pre>
+            </div>
+
+            <p>For HTTP GET requests, parameters can be provided as query parameters:</p>
+            <div class="code-block">
+                <pre><code>http://node-address:26657/method_name?param1=value1&param2=value2</code></pre>
+            </div>
+
+            <h2 id="blockchain-endpoints">Blockchain Endpoints</h2>
+            <p>Endpoints for retrieving blockchain information:</p>
+
+            <h3 id="block">Block</h3>
+            <p>Get block information at a specified height.</p>
+            <div class="code-block">
+                <pre><code>GET /block?height={height}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>height</code> (optional): Block height. If not provided, returns the latest block.</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/block?height=1000</code></pre>
+            </div>
+
+            <h3 id="blockchain">Blockchain</h3>
+            <p>Get a range of blocks.</p>
+            <div class="code-block">
+                <pre><code>GET /blockchain?minHeight={min_height}&maxHeight={max_height}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>minHeight</code>: Minimum block height</li>
+                <li><code>maxHeight</code>: Maximum block height</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/blockchain?minHeight=1000&maxHeight=1010</code></pre>
+            </div>
+
+            <h3 id="block-results">Block Results</h3>
+            <p>Get the results of block execution at a specified height.</p>
+            <div class="code-block">
+                <pre><code>GET /block_results?height={height}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>height</code> (optional): Block height. If not provided, returns the latest block results.</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/block_results?height=1000</code></pre>
+            </div>
+
+            <h3 id="commit">Commit</h3>
+            <p>Get block commit information at a specified height.</p>
+            <div class="code-block">
+                <pre><code>GET /commit?height={height}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>height</code> (optional): Block height. If not provided, returns the latest commit.</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/commit?height=1000</code></pre>
+            </div>
+
+            <h3 id="genesis">Genesis</h3>
+            <p>Get the genesis file.</p>
+            <div class="code-block">
+                <pre><code>GET /genesis</code></pre>
+            </div>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/genesis</code></pre>
+            </div>
+
+            <h2 id="node-endpoints">Node Endpoints</h2>
+            <p>Endpoints for retrieving node information:</p>
+
+            <h3 id="health">Health</h3>
+            <p>Get node health status.</p>
+            <div class="code-block">
+                <pre><code>GET /health</code></pre>
+            </div>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/health</code></pre>
+            </div>
+
+            <h3 id="status">Status</h3>
+            <p>Get node status information.</p>
+            <div class="code-block">
+                <pre><code>GET /status</code></pre>
+            </div>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/status</code></pre>
+            </div>
+
+            <h3 id="net-info">Net Info</h3>
+            <p>Get network information.</p>
+            <div class="code-block">
+                <pre><code>GET /net_info</code></pre>
+            </div>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/net_info</code></pre>
+            </div>
+
+            <h3 id="consensus-state">Consensus State</h3>
+            <p>Get consensus state information.</p>
+            <div class="code-block">
+                <pre><code>GET /consensus_state</code></pre>
+            </div>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/consensus_state</code></pre>
+            </div>
+
+            <h3 id="dump-consensus-state">Dump Consensus State</h3>
+            <p>Get detailed consensus state information.</p>
+            <div class="code-block">
+                <pre><code>GET /dump_consensus_state</code></pre>
+            </div>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/dump_consensus_state</code></pre>
+            </div>
+
+            <h2 id="transaction-endpoints">Transaction Endpoints</h2>
+            <p>Endpoints for working with transactions:</p>
+
+            <h3 id="broadcast-tx-sync">Broadcast Transaction (Sync)</h3>
+            <p>Broadcast a transaction and wait for it to be checked.</p>
+            <div class="code-block">
+                <pre><code>GET /broadcast_tx_sync?tx={tx}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>tx</code>: Transaction data encoded in base64</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/broadcast_tx_sync?tx=DEADBEEFDEADBEEFDEADBEEF</code></pre>
+            </div>
+
+            <h3 id="broadcast-tx-async">Broadcast Transaction (Async)</h3>
+            <p>Broadcast a transaction without waiting for a response.</p>
+            <div class="code-block">
+                <pre><code>GET /broadcast_tx_async?tx={tx}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>tx</code>: Transaction data encoded in base64</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/broadcast_tx_async?tx=DEADBEEFDEADBEEFDEADBEEF</code></pre>
+            </div>
+
+            <h3 id="broadcast-tx-commit">Broadcast Transaction (Commit)</h3>
+            <p>Broadcast a transaction and wait for it to be committed to a block.</p>
+            <div class="code-block">
+                <pre><code>GET /broadcast_tx_commit?tx={tx}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>tx</code>: Transaction data encoded in base64</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/broadcast_tx_commit?tx=DEADBEEFDEADBEEFDEADBEEF</code></pre>
+            </div>
+
+            <h3 id="tx">Transaction</h3>
+            <p>Get transaction information by hash.</p>
+            <div class="code-block">
+                <pre><code>GET /tx?hash={hash}&prove={prove}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>hash</code>: Transaction hash (hex-encoded)</li>
+                <li><code>prove</code> (optional): Include proof of the transaction inclusion in the block (true/false)</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/tx?hash=0xABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789&prove=true</code></pre>
+            </div>
+
+            <h3 id="tx-search">Transaction Search</h3>
+            <p>Search for transactions matching the query.</p>
+            <div class="code-block">
+                <pre><code>GET /tx_search?query={query}&prove={prove}&page={page}&per_page={per_page}&order_by={order_by}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>query</code>: Query string (e.g., "tx.height > 5 AND tx.height < 10")</li>
+                <li><code>prove</code> (optional): Include proofs of the transactions inclusion in the block</li>
+                <li><code>page</code> (optional): Page number (1-based)</li>
+                <li><code>per_page</code> (optional): Number of items per page</li>
+                <li><code>order_by</code> (optional): Sort order (asc/desc)</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/tx_search?query=tx.height>1000+AND+tx.height<1005&prove=true</code></pre>
+            </div>
+
+            <h2 id="abci-endpoints">ABCI Endpoints</h2>
+            <p>Endpoints for interacting with the ABCI application:</p>
+
+            <h3 id="abci-info">ABCI Info</h3>
+            <p>Get information about the ABCI application.</p>
+            <div class="code-block">
+                <pre><code>GET /abci_info</code></pre>
+            </div>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/abci_info</code></pre>
+            </div>
+
+            <h3 id="abci-query">ABCI Query</h3>
+            <p>Query the ABCI application.</p>
+            <div class="code-block">
+                <pre><code>GET /abci_query?path={path}&data={data}&height={height}&prove={prove}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>path</code>: Path to the data (e.g., "/store/bank/key")</li>
+                <li><code>data</code>: Data to query (hex-encoded)</li>
+                <li><code>height</code> (optional): Block height to query (0 means latest)</li>
+                <li><code>prove</code> (optional): Include proof in the response (true/false)</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/abci_query?path="/store/bank/key"&data=DEADBEEF&height=1000&prove=true</code></pre>
+            </div>
+
+            <h2 id="validator-endpoints">Validator Endpoints</h2>
+            <p>Endpoints for retrieving validator information:</p>
+
+            <h3 id="validators">Validators</h3>
+            <p>Get the validator set at a specified height.</p>
+            <div class="code-block">
+                <pre><code>GET /validators?height={height}&page={page}&per_page={per_page}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>height</code> (optional): Block height. If not provided, returns the latest validator set.</li>
+                <li><code>page</code> (optional): Page number (1-based)</li>
+                <li><code>per_page</code> (optional): Number of items per page</li>
+            </ul>
+            <p><strong>Example:</strong></p>
+            <div class="code-block">
+                <pre><code>curl http://localhost:26657/validators?height=1000&page=1&per_page=100</code></pre>
+            </div>
+
+            <h2 id="event-endpoints">Event Endpoints</h2>
+            <p>Endpoints for subscribing to events:</p>
+
+            <h3 id="subscribe">Subscribe</h3>
+            <p>Subscribe to events via WebSocket.</p>
+            <div class="code-block">
+                <pre><code>// WebSocket request
+{
+  "jsonrpc": "2.0",
+  "method": "subscribe",
+  "id": 1,
+  "params": {
+    "query": "tm.event='NewBlock'"
+  }
+}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>query</code>: Query string for filtering events</li>
+            </ul>
+            <p><strong>Example Queries:</strong></p>
+            <ul>
+                <li><code>tm.event='NewBlock'</code>: Subscribe to new blocks</li>
+                <li><code>tm.event='Tx' AND tx.hash='ABCD...'</code>: Subscribe to a specific transaction</li>
+                <li><code>tm.event='Tx' AND transfer.recipient='chainos1...'</code>: Subscribe to transfers to a specific address</li>
+            </ul>
+
+            <h3 id="unsubscribe">Unsubscribe</h3>
+            <p>Unsubscribe from events via WebSocket.</p>
+            <div class="code-block">
+                <pre><code>// WebSocket request
+{
+  "jsonrpc": "2.0",
+  "method": "unsubscribe",
+  "id": 1,
+  "params": {
+    "query": "tm.event='NewBlock'"
+  }
+}</code></pre>
+            </div>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><code>query</code>: Query string used in the subscription</li>
+            </ul>
+
+            <h2 id="public-endpoints">Public RPC Endpoints</h2>
+            <p>The following public RPC endpoints are available for ChainOS:</p>
+
+            <div class="card">
+                <h3>Mainnet</h3>
+                <ul>
+                    <li><strong>Primary:</strong> <code>https://rpc.chainos.network</code></li>
+                    <li><strong>Backup:</strong> <code>https://rpc-backup.chainos.network</code></li>
+                    <li><strong>Archive:</strong> <code>https://archive-rpc.chainos.network</code> (includes historical data)</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Testnet</h3>
+                <ul>
+                    <li><strong>Primary:</strong> <code>https://testnet-rpc.chainos.network</code></li>
+                    <li><strong>Backup:</strong> <code>https://testnet-rpc-backup.chainos.network</code></li>
+                </ul>
+            </div>
+
+            <div class="alert alert-warning">
+                <h4 class="alert-title">Rate Limits</h4>
+                <p>Public RPC endpoints have rate limits to prevent abuse:</p>
+                <ul>
+                    <li>100 requests per minute per IP for query endpoints</li>
+                    <li>20 requests per minute per IP for broadcast endpoints</li>
+                    <li>5 WebSocket connections per IP</li>
+                </ul>
+                <p>For production applications, consider running your own node or using a dedicated RPC provider.</p>
+            </div>
+
+            <h2 id="rpc-security">RPC Security</h2>
+            <p>When exposing RPC endpoints publicly, follow these security best practices:</p>
+            <ul>
+                <li>Use HTTPS/TLS for all connections</li>
+                <li>Implement rate limiting to prevent abuse</li>
+                <li>Configure firewall rules to restrict access</li>
+                <li>Consider using a reverse proxy (like Nginx) in front of the RPC server</li>
+                <li>Disable unnecessary endpoints</li>
+                <li>Monitor for suspicious activity</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Need Help?</h4>
+                <p>If you need assistance with the ChainOS RPC endpoints, join our <a href="https://discord.gg/opencrypto" target="_blank">Discord community</a> where our team and other developers can help.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validator Responsibilities - ChainOS Documentation</title>
+    <meta name="description" content="Learn about the responsibilities and duties of ChainOS validators, including operational requirements, governance participation, and community engagement.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html" class="active">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>Validator Responsibilities</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">Validator Role</h4>
+                <p>Validators are the backbone of the ChainOS network, responsible for maintaining consensus, securing the blockchain, and participating in governance. This guide outlines the key responsibilities and expectations for ChainOS validators.</p>
+            </div>
+
+            <h2 id="operational-responsibilities">Operational Responsibilities</h2>
+            <p>As a validator, you have several critical operational responsibilities:</p>
+
+            <div class="card">
+                <h3>Maintain High Uptime</h3>
+                <p>Validators must maintain high availability to participate in consensus:</p>
+                <ul>
+                    <li><strong>Target Uptime:</strong> 99.9% or higher (less than 1.5 hours of downtime per week)</li>
+                    <li><strong>Downtime Consequences:</strong> Missing blocks can result in being temporarily jailed and slashed</li>
+                    <li><strong>Monitoring:</strong> Implement comprehensive monitoring with alerts for any issues</li>
+                </ul>
+                <p>After 10,000 consecutive missed blocks (approximately 6.5 hours), validators are automatically jailed and must manually unjail themselves after resolving the issue.</p>
+            </div>
+
+            <div class="card">
+                <h3>Infrastructure Management</h3>
+                <p>Validators must maintain secure, reliable infrastructure:</p>
+                <ul>
+                    <li><strong>Hardware:</strong> Use enterprise-grade hardware that meets or exceeds the <a href="validators.html#hardware-requirements">recommended specifications</a></li>
+                    <li><strong>Redundancy:</strong> Implement redundant systems, including backup power and network connections</li>
+                    <li><strong>Security:</strong> Follow all <a href="node-security.html">security best practices</a> to protect validator keys and infrastructure</li>
+                    <li><strong>Sentry Nodes:</strong> Implement a sentry node architecture to protect validator nodes</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Software Updates</h3>
+                <p>Validators must stay current with software updates:</p>
+                <ul>
+                    <li><strong>Timely Updates:</strong> Apply security patches and updates promptly</li>
+                    <li><strong>Network Upgrades:</strong> Participate in coordinated network upgrades and hard forks</li>
+                    <li><strong>Testing:</strong> Test updates on testnet before applying to production</li>
+                    <li><strong>Monitoring:</strong> Stay informed about upcoming updates through official channels</li>
+                </ul>
+                <p>Failure to update for network upgrades can result in your validator being unable to participate in consensus.</p>
+            </div>
+
+            <h2 id="consensus-responsibilities">Consensus Responsibilities</h2>
+            <p>Validators play a critical role in the consensus process:</p>
+
+            <h3 id="block-production">Block Production</h3>
+            <p>When selected as the proposer, validators are responsible for:</p>
+            <ul>
+                <li>Collecting transactions from the mempool</li>
+                <li>Creating valid block proposals</li>
+                <li>Broadcasting block proposals to other validators</li>
+                <li>Ensuring blocks are produced within the expected time frame</li>
+            </ul>
+
+            <h3 id="block-validation">Block Validation</h3>
+            <p>All validators participate in validating proposed blocks:</p>
+            <ul>
+                <li>Verifying transaction validity</li>
+                <li>Checking block structure and signatures</li>
+                <li>Participating in the voting process (prevote and precommit phases)</li>
+                <li>Helping achieve consensus finality</li>
+            </ul>
+
+            <div class="alert alert-warning">
+                <h4 class="alert-title">Double Signing Warning</h4>
+                <p>Running the same validator key on multiple nodes simultaneously can lead to double signing, which is a serious violation. Double signing results in a 5% slashing penalty and permanent jailing. Always ensure your validator key is only active on a single node at any time.</p>
+            </div>
+
+            <h2 id="governance-responsibilities">Governance Responsibilities</h2>
+            <p>Validators are expected to actively participate in on-chain governance:</p>
+
+            <div class="card">
+                <h3>Proposal Voting</h3>
+                <p>Validators should vote on all governance proposals:</p>
+                <ul>
+                    <li><strong>Informed Voting:</strong> Research and understand proposals before voting</li>
+                    <li><strong>Timely Voting:</strong> Vote within the voting period (typically 14 days)</li>
+                    <li><strong>Voting Options:</strong> Choose from Yes, No, No with Veto, or Abstain</li>
+                    <li><strong>Responsibility:</strong> Validators who don't vote dilute their influence in the network</li>
+                </ul>
+                <p>Voting command example:</p>
+                <div class="code-block">
+                    <pre><code>chainosd tx gov vote 1 yes --from validator-wallet</code></pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Proposal Submission</h3>
+                <p>Validators can submit governance proposals:</p>
+                <ul>
+                    <li><strong>Text Proposals:</strong> For signaling and community discussion</li>
+                    <li><strong>Parameter Change Proposals:</strong> To modify network parameters</li>
+                    <li><strong>Software Upgrade Proposals:</strong> For coordinating network upgrades</li>
+                    <li><strong>Community Pool Spend Proposals:</strong> For allocating funds from the community pool</li>
+                </ul>
+                <p>Proposal submission requires a deposit (typically 10,000 UOS) which is refunded if the proposal passes or is rejected without being vetoed.</p>
+            </div>
+
+            <h2 id="community-responsibilities">Community Responsibilities</h2>
+            <p>Validators are leaders in the ChainOS ecosystem and have responsibilities to the community:</p>
+
+            <div class="card">
+                <h3>Communication</h3>
+                <p>Maintain open communication with the community:</p>
+                <ul>
+                    <li>Provide accurate information about your validator operations</li>
+                    <li>Announce planned maintenance in advance</li>
+                    <li>Participate in community discussions and forums</li>
+                    <li>Be responsive to delegator inquiries</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Education and Support</h3>
+                <p>Contribute to the growth and health of the ecosystem:</p>
+                <ul>
+                    <li>Help educate new users and delegators</li>
+                    <li>Provide technical support when possible</li>
+                    <li>Create documentation, guides, or tools</li>
+                    <li>Mentor new validators</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Network Development</h3>
+                <p>Contribute to the ongoing development of ChainOS:</p>
+                <ul>
+                    <li>Participate in testnet activities</li>
+                    <li>Report bugs and suggest improvements</li>
+                    <li>Contribute to open-source code when possible</li>
+                    <li>Help with network testing and upgrades</li>
+                </ul>
+            </div>
+
+            <h2 id="delegation-responsibilities">Delegation Responsibilities</h2>
+            <p>Validators have responsibilities to their delegators:</p>
+
+            <div class="card">
+                <h3>Transparent Operations</h3>
+                <p>Maintain transparency with delegators:</p>
+                <ul>
+                    <li>Clearly communicate commission rates and any changes</li>
+                    <li>Provide information about validator performance and infrastructure</li>
+                    <li>Disclose any potential conflicts of interest</li>
+                    <li>Be honest about risks and expectations</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Commission Management</h3>
+                <p>Handle commission rates responsibly:</p>
+                <ul>
+                    <li>Set reasonable commission rates that reflect your value and costs</li>
+                    <li>Provide advance notice before increasing commission rates</li>
+                    <li>Avoid frequent commission changes</li>
+                    <li>Consider offering commission rebates or incentives for long-term delegators</li>
+                </ul>
+                <p>Commission rate changes are limited by the <code>commission-max-change-rate</code> parameter set during validator creation.</p>
+            </div>
+
+            <h2 id="compliance-responsibilities">Compliance Responsibilities</h2>
+            <p>Validators should ensure they operate within legal and regulatory frameworks:</p>
+
+            <div class="card">
+                <h3>Legal Compliance</h3>
+                <ul>
+                    <li>Understand and comply with relevant laws in your jurisdiction</li>
+                    <li>Consider tax implications of validator rewards</li>
+                    <li>Maintain appropriate records for regulatory purposes</li>
+                    <li>Consult legal professionals when necessary</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Network Rules Compliance</h3>
+                <ul>
+                    <li>Adhere to the ChainOS protocol rules</li>
+                    <li>Follow community-established norms and standards</li>
+                    <li>Avoid actions that could harm the network</li>
+                    <li>Report violations by other validators when observed</li>
+                </ul>
+            </div>
+
+            <h2 id="responsibility-checklist">Validator Responsibility Checklist</h2>
+            <p>Use this checklist to ensure you're meeting all validator responsibilities:</p>
+
+            <div class="card">
+                <h3>Daily Responsibilities</h3>
+                <ul>
+                    <li>☐ Monitor validator uptime and performance</li>
+                    <li>☐ Check for missed blocks</li>
+                    <li>☐ Review system resource usage</li>
+                    <li>☐ Verify network connectivity</li>
+                    <li>☐ Check for security alerts</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Weekly Responsibilities</h3>
+                <ul>
+                    <li>☐ Apply system security updates</li>
+                    <li>☐ Review logs for unusual activity</li>
+                    <li>☐ Check for ChainOS software updates</li>
+                    <li>☐ Verify backup systems</li>
+                    <li>☐ Review active governance proposals</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Monthly Responsibilities</h3>
+                <ul>
+                    <li>☐ Perform full system maintenance</li>
+                    <li>☐ Test disaster recovery procedures</li>
+                    <li>☐ Review and optimize node configuration</li>
+                    <li>☐ Update validator information and website</li>
+                    <li>☐ Engage with the community</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Need Help?</h4>
+                <p>If you have questions about validator responsibilities or need assistance, join our <a href="https://discord.gg/opencrypto" target="_blank">Discord community</a> where our team and other validators can help.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

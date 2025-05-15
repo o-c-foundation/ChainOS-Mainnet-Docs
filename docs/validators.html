@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Becoming a Validator - ChainOS Documentation</title>
+    <meta name="description" content="Learn how to become a validator on the ChainOS network, secure the blockchain, and earn rewards.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html" class="active">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html" class="active">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>Becoming a ChainOS Validator</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">Validator Role</h4>
+                <p>Validators are essential participants in the ChainOS network who secure the blockchain, produce blocks, and participate in consensus. In return, validators earn rewards from transaction fees and block rewards.</p>
+            </div>
+
+            <h2 id="overview">Validator Overview</h2>
+            <p>The ChainOS network operates with a set of 100 validators who are responsible for maintaining consensus and securing the blockchain. Validators in ChainOS:</p>
+            <ul>
+                <li>Run specialized hardware to ensure high availability and performance</li>
+                <li>Stake (bond) UOS tokens as collateral</li>
+                <li>Produce blocks and validate transactions</li>
+                <li>Participate in governance decisions</li>
+                <li>Earn rewards proportional to their stake</li>
+            </ul>
+
+            <h2 id="requirements">Requirements</h2>
+            <p>Before becoming a validator, ensure you meet these requirements:</p>
+
+            <h3 id="hardware-requirements">Hardware Requirements</h3>
+            <div class="card">
+                <h4>Production Validator Specifications</h4>
+                <ul>
+                    <li><strong>CPU:</strong> 16+ cores / 32+ threads (3.5+ GHz)</li>
+                    <li><strong>RAM:</strong> 64GB+ DDR4</li>
+                    <li><strong>Storage:</strong> 2TB+ NVMe SSD (enterprise grade)</li>
+                    <li><strong>Network:</strong> 1 Gbps symmetric connection with low latency</li>
+                    <li><strong>Redundancy:</strong> UPS, backup power, redundant network connections</li>
+                    <li><strong>Security:</strong> Hardware security module (HSM) for key storage</li>
+                </ul>
+            </div>
+
+            <h3 id="token-requirements">Token Requirements</h3>
+            <p>To become a validator, you need:</p>
+            <ul>
+                <li><strong>Minimum Stake:</strong> 10,000 UOS tokens</li>
+                <li><strong>Recommended Stake:</strong> 50,000+ UOS tokens for better chances of being in the active set</li>
+            </ul>
+
+            <div class="alert alert-warning">
+                <h4 class="alert-title">Important Note on Slashing</h4>
+                <p>Validators who violate protocol rules (double signing, extended downtime) may have a portion of their staked tokens slashed. Ensure your infrastructure is secure and reliable before becoming a validator.</p>
+            </div>
+
+            <h2 id="setup-process">Validator Setup Process</h2>
+            <p>Follow these steps to set up your validator node:</p>
+
+            <h3 id="setup-full-node">1. Set Up a Full Node</h3>
+            <p>First, you need to set up a full node following our <a href="node-setup.html">Node Setup Guide</a>. Ensure your node is fully synced with the network before proceeding.</p>
+
+            <h3 id="create-wallet">2. Create or Recover a Wallet</h3>
+            <div class="code-block">
+                <pre><code># Create a new wallet
+chainosd keys add validator-wallet
+
+# Or recover an existing wallet
+chainosd keys add validator-wallet --recover</code></pre>
+            </div>
+            <p>Make sure to securely back up your mnemonic phrase in a safe location.</p>
+
+            <h3 id="get-tokens">3. Acquire UOS Tokens</h3>
+            <p>You'll need at least 10,000 UOS tokens to become a validator. These can be acquired through:</p>
+            <ul>
+                <li>Exchanges that list UOS</li>
+                <li>Direct purchase from existing token holders</li>
+                <li>Contacting the ChainOS team for validator candidacy</li>
+            </ul>
+
+            <h3 id="create-validator">4. Create Your Validator</h3>
+            <p>Once your node is synced and you have the required tokens, you can create your validator:</p>
+            <div class="code-block">
+                <pre><code>chainosd tx staking create-validator \
+  --amount=10000000000uos \
+  --pubkey=$(chainosd tendermint show-validator) \
+  --moniker="your-validator-name" \
+  --website="https://yourwebsite.com" \
+  --details="Description of your validator" \
+  --security-contact="security@yourvalidator.com" \
+  --chain-id=chainos-1 \
+  --commission-rate="0.10" \
+  --commission-max-rate="0.20" \
+  --commission-max-change-rate="0.01" \
+  --min-self-delegation="1" \
+  --gas="auto" \
+  --from=validator-wallet</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <h4 class="alert-title">Parameter Explanation</h4>
+                <ul>
+                    <li><strong>amount:</strong> Amount of tokens to stake (in uos, where 1 UOS = 1,000,000 uos)</li>
+                    <li><strong>pubkey:</strong> Your validator's public key</li>
+                    <li><strong>moniker:</strong> A name for your validator (visible on block explorers)</li>
+                    <li><strong>website, details, security-contact:</strong> Public information about your validator</li>
+                    <li><strong>commission-rate:</strong> Percentage of rewards you take as commission</li>
+                    <li><strong>commission-max-rate:</strong> Maximum commission you can charge</li>
+                    <li><strong>commission-max-change-rate:</strong> Maximum daily increase in commission</li>
+                </ul>
+            </div>
+
+            <h3 id="verify-validator">5. Verify Your Validator Status</h3>
+            <p>Check if your validator was successfully created and is in the active set:</p>
+            <div class="code-block">
+                <pre><code># Query your validator info
+chainosd query staking validator $(chainosd keys show validator-wallet --bech val -a)
+
+# Check if you're in the active validator set
+chainosd query tendermint-validator-set | grep $(chainosd tendermint show-address)</code></pre>
+            </div>
+
+            <h2 id="best-practices">Validator Best Practices</h2>
+            <p>To maintain a reliable validator operation and avoid slashing, follow these best practices:</p>
+
+            <h3 id="security">Security</h3>
+            <div class="card">
+                <h4>Security Recommendations</h4>
+                <ul>
+                    <li><strong>Use a Hardware Security Module (HSM)</strong> for key management</li>
+                    <li><strong>Set up a sentry node architecture</strong> to protect your validator from DDoS attacks</li>
+                    <li><strong>Implement strict firewall rules</strong> to limit access to your validator</li>
+                    <li><strong>Use SSH keys</strong> and disable password authentication</li>
+                    <li><strong>Regularly update</strong> your server's operating system and security patches</li>
+                    <li><strong>Implement multi-factor authentication</strong> for all access points</li>
+                </ul>
+            </div>
+
+            <h3 id="monitoring">Monitoring</h3>
+            <p>Set up comprehensive monitoring to ensure your validator is operating correctly:</p>
+            <ul>
+                <li>Monitor server metrics (CPU, RAM, disk, network)</li>
+                <li>Set up alerts for missed blocks and validator status changes</li>
+                <li>Monitor your signing performance and uptime</li>
+                <li>Implement log monitoring for error detection</li>
+            </ul>
+
+            <div class="code-block">
+                <pre><code># Example Prometheus configuration for ChainOS monitoring
+scrape_configs:
+  - job_name: 'chainos'
+    scrape_interval: 15s
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['localhost:26660']</code></pre>
+            </div>
+
+            <h3 id="high-availability">High Availability</h3>
+            <p>To ensure maximum uptime and avoid slashing due to downtime:</p>
+            <ul>
+                <li>Set up a backup validator node that can take over if the primary fails</li>
+                <li>Implement automatic failover mechanisms</li>
+                <li>Use redundant power supplies and network connections</li>
+                <li>Consider using cloud providers with high availability guarantees</li>
+            </ul>
+
+            <h2 id="validator-economics">Validator Economics</h2>
+            <p>Understanding the economic aspects of running a validator is crucial:</p>
+
+            <h3 id="rewards">Rewards</h3>
+            <p>Validators earn rewards from two sources:</p>
+            <ul>
+                <li><strong>Block Rewards:</strong> New UOS tokens minted with each block</li>
+                <li><strong>Transaction Fees:</strong> Fees paid by users for transactions</li>
+            </ul>
+            <p>Rewards are distributed proportionally to stake, with validators taking a commission.</p>
+
+            <h3 id="commission">Commission</h3>
+            <p>Validators set a commission rate, which is the percentage of rewards they keep before distributing the remainder to delegators. Setting the right commission is important:</p>
+            <ul>
+                <li>Too high: May discourage delegations</li>
+                <li>Too low: May not cover operational costs</li>
+            </ul>
+            <p>Most validators set commissions between 5-20% based on their services and reputation.</p>
+
+            <h3 id="slashing">Slashing Risks</h3>
+            <p>Validators face slashing penalties for:</p>
+            <ul>
+                <li><strong>Double Signing:</strong> 5% of staked tokens</li>
+                <li><strong>Downtime:</strong> 0.01% of staked tokens after missing 10,000 blocks (approximately 6.5 hours)</li>
+            </ul>
+            <p>These penalties affect both the validator's self-bonded tokens and their delegators' tokens.</p>
+
+            <h2 id="application-process">Validator Application Process</h2>
+            <p>While anyone with sufficient tokens can become a validator, joining the active set requires being among the top 100 validators by stake. To improve your chances:</p>
+
+            <h3 id="contact-team">1. Contact the ChainOS Team</h3>
+            <p>Reach out to the ChainOS team to express your interest in becoming a validator:</p>
+            <ul>
+                <li>Email: validators@opencryptofoundation.com</li>
+                <li>Discord: <a href="https://discord.gg/opencrypto" target="_blank">discord.gg/opencrypto</a></li>
+            </ul>
+
+            <h3 id="prepare-proposal">2. Prepare a Validator Proposal</h3>
+            <p>Create a proposal document that includes:</p>
+            <ul>
+                <li>Your technical expertise and experience</li>
+                <li>Infrastructure details and security measures</li>
+                <li>Contribution plans to the ChainOS ecosystem</li>
+                <li>Your team and background</li>
+            </ul>
+
+            <h3 id="community-engagement">3. Engage with the Community</h3>
+            <p>Active participation in the ChainOS community can help you gain visibility and delegations:</p>
+            <ul>
+                <li>Participate in governance discussions</li>
+                <li>Contribute to development or documentation</li>
+                <li>Help other community members</li>
+                <li>Share your validator journey and insights</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Ready to Apply?</h4>
+                <p>If you're ready to become a ChainOS validator, contact us through our <a href="https://discord.gg/opencrypto" target="_blank">Discord</a> or email validators@opencryptofoundation.com with your proposal.</p>
+            </div>
+
+            <h2 id="faq">Frequently Asked Questions</h2>
+            <div class="card">
+                <h3>How much can I earn as a validator?</h3>
+                <p>Earnings depend on your stake, the total staked tokens in the network, and your commission rate. With the current network parameters, validators can expect an annual return of approximately 8-15% before operational costs.</p>
+            </div>
+
+            <div class="card">
+                <h3>Can I run a validator on a cloud provider?</h3>
+                <p>Yes, many validators use cloud providers like AWS, GCP, or Azure. However, for maximum security and performance, consider using dedicated hardware or a hybrid approach.</p>
+            </div>
+
+            <div class="card">
+                <h3>What happens if my validator goes offline?</h3>
+                <p>If your validator misses blocks, it will be temporarily removed from the active set (jailed) after missing 10,000 consecutive blocks. You can unjail your validator once it's back online.</p>
+            </div>
+
+            <div class="card">
+                <h3>Can I change my commission rate after creating my validator?</h3>
+                <p>Yes, you can change your commission rate once per day, up to your commission-max-change-rate parameter set during creation.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture - ChainOS Documentation</title>
+    <meta name="description" content="Detailed overview of ChainOS architecture, including consensus mechanisms, network layers, and component interactions.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html" class="active">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>ChainOS Architecture</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">Architecture Overview</h4>
+                <p>ChainOS is built on a multi-layered architecture designed for high performance, security, and scalability. This document provides a comprehensive overview of the system's components and their interactions.</p>
+            </div>
+
+            <h2 id="architecture-overview">Architectural Layers</h2>
+            <p>ChainOS implements a modular architecture with four primary layers:</p>
+
+            <div class="architecture-diagram">
+                <div class="code-block">
+                    <pre><code>┌───────────────────────────────────────────────────────────┐
+│                    Application Layer                       │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│   │ Transaction │  │   Smart     │  │ State Transition │   │
+│   │  Execution  │  │  Contracts  │  │     Engine      │   │
+│   └─────────────┘  └─────────────┘  └─────────────────┘   │
+├───────────────────────────────────────────────────────────┤
+│                    Consensus Layer                         │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│   │  Modified   │  │ Probabilistic│  │  Byzantine Fault │   │
+│   │  Tendermint │  │  Finality   │  │     Tolerance    │   │
+│   └─────────────┘  └─────────────┘  └─────────────────┘   │
+├───────────────────────────────────────────────────────────┤
+│                    Networking Layer                        │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│   │  P2P Mesh   │  │  Libp2p     │  │  Gossip Protocol│   │
+│   │  Network    │  │  Subsystem  │  │   Implementation │   │
+│   └─────────────┘  └─────────────┘  └─────────────────┘   │
+├───────────────────────────────────────────────────────────┤
+│                    Persistence Layer                       │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│   │  LevelDB    │  │ Merkleized  │  │  IAVL+ Tree     │   │
+│   │  Storage    │  │   State     │  │  Implementation  │   │
+│   └─────────────┘  └─────────────┘  └─────────────────┘   │
+└───────────────────────────────────────────────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h3 id="application-layer">Application Layer</h3>
+            <p>The Application Layer is responsible for transaction execution, state transitions, and business logic:</p>
+            
+            <div class="card">
+                <h4>Key Components</h4>
+                <ul>
+                    <li><strong>Transaction Execution Engine:</strong> Processes and validates transactions according to the protocol rules</li>
+                    <li><strong>Smart Contract VM:</strong> Executes deterministic smart contracts with sandboxed execution environment</li>
+                    <li><strong>State Transition Engine:</strong> Manages the application state and applies state transitions based on transaction results</li>
+                    <li><strong>Module System:</strong> Pluggable modules for specific functionality (staking, governance, etc.)</li>
+                </ul>
+            </div>
+            
+            <p>The Application Layer communicates with the Consensus Layer through the Application Blockchain Interface (ABI), which provides a standardized way for the consensus engine to deliver transactions to the application and receive results.</p>
+
+            <h3 id="consensus-layer">Consensus Layer</h3>
+            <p>The Consensus Layer ensures that all nodes in the network agree on the state of the blockchain:</p>
+            
+            <div class="card">
+                <h4>Key Components</h4>
+                <ul>
+                    <li><strong>Modified Tendermint BFT:</strong> ChainOS uses a modified version of Tendermint Byzantine Fault Tolerance consensus with optimizations for higher throughput</li>
+                    <li><strong>Validator Set Management:</strong> Manages the active set of validators based on stake and performance</li>
+                    <li><strong>Block Production:</strong> Coordinates the creation and validation of new blocks</li>
+                    <li><strong>Finality Gadget:</strong> Provides fast probabilistic finality (4.5 seconds) with eventual absolute finality</li>
+                </ul>
+            </div>
+            
+            <p>The consensus mechanism can tolerate up to 1/3 of validators being Byzantine (malicious or faulty) while still maintaining safety and liveness properties.</p>
+
+            <div class="alert alert-info">
+                <h4 class="alert-title">Consensus Optimizations</h4>
+                <p>ChainOS has implemented several optimizations to the consensus layer that enable 2.37-second block times and up to 8,750 transactions per second:</p>
+                <ul>
+                    <li>Parallel transaction validation</li>
+                    <li>Optimized signature verification with batch processing</li>
+                    <li>Pipelined block production and propagation</li>
+                    <li>Adaptive gossip protocol for efficient block distribution</li>
+                </ul>
+            </div>
+
+            <h3 id="networking-layer">Networking Layer</h3>
+            <p>The Networking Layer facilitates communication between nodes in the network:</p>
+            
+            <div class="card">
+                <h4>Key Components</h4>
+                <ul>
+                    <li><strong>P2P Mesh Network:</strong> Connects nodes in a resilient peer-to-peer topology</li>
+                    <li><strong>Libp2p Subsystem:</strong> Provides transport, discovery, and routing capabilities</li>
+                    <li><strong>Gossip Protocol:</strong> Efficiently propagates blocks, transactions, and consensus messages</li>
+                    <li><strong>Connection Management:</strong> Handles peer discovery, connection establishment, and maintenance</li>
+                </ul>
+            </div>
+            
+            <p>The networking layer includes optimizations for reducing latency and maximizing throughput, such as prioritized message queues, adaptive peer selection, and bandwidth management.</p>
+
+            <h3 id="persistence-layer">Persistence Layer</h3>
+            <p>The Persistence Layer handles data storage and retrieval:</p>
+            
+            <div class="card">
+                <h4>Key Components</h4>
+                <ul>
+                    <li><strong>LevelDB Storage:</strong> Fast key-value store for blockchain data</li>
+                    <li><strong>Merkleized State:</strong> Efficient state representation with cryptographic verification</li>
+                    <li><strong>IAVL+ Tree:</strong> Optimized Merkle tree implementation for state storage</li>
+                    <li><strong>Pruning System:</strong> Manages historical data retention and state pruning</li>
+                </ul>
+            </div>
+            
+            <p>The persistence layer is designed for high performance and data integrity, with optimizations for both read and write operations.</p>
+
+            <h2 id="node-types">Node Types</h2>
+            <p>ChainOS supports several types of nodes with different roles in the network:</p>
+
+            <h3 id="validator-nodes">Validator Nodes</h3>
+            <p>Validator nodes participate in consensus by proposing and validating blocks:</p>
+            <ul>
+                <li>Run the full ChainOS stack with all four layers</li>
+                <li>Stake UOS tokens as collateral</li>
+                <li>Earn rewards for block production and transaction validation</li>
+                <li>Require high reliability and performance</li>
+            </ul>
+
+            <h3 id="full-nodes">Full Nodes</h3>
+            <p>Full nodes maintain a complete copy of the blockchain but do not participate in consensus:</p>
+            <ul>
+                <li>Verify all transactions and blocks</li>
+                <li>Serve API requests from applications</li>
+                <li>Relay transactions and blocks to other nodes</li>
+                <li>Can be used as sentry nodes to protect validators</li>
+            </ul>
+
+            <h3 id="archive-nodes">Archive Nodes</h3>
+            <p>Archive nodes maintain the complete historical state of the blockchain:</p>
+            <ul>
+                <li>Store all historical states without pruning</li>
+                <li>Support historical queries and data analysis</li>
+                <li>Require significantly more storage than full nodes</li>
+                <li>Useful for explorers, indexers, and analytics services</li>
+            </ul>
+
+            <h3 id="light-clients">Light Clients</h3>
+            <p>Light clients provide minimal functionality for resource-constrained environments:</p>
+            <ul>
+                <li>Verify block headers and proofs without storing the full state</li>
+                <li>Trust full nodes for data retrieval</li>
+                <li>Suitable for mobile devices and IoT applications</li>
+                <li>Significantly lower resource requirements</li>
+            </ul>
+
+            <h2 id="transaction-flow">Transaction Flow</h2>
+            <p>The following diagram illustrates the flow of a transaction through the ChainOS architecture:</p>
+
+            <div class="code-block">
+                <pre><code>┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐
+│  Client  │────▶│  Mempool │────▶│ Consensus│────▶│   Block  │────▶│  State   │
+│          │     │          │     │  Engine  │     │ Producer │     │ Transition│
+└─────────┘     └─────────┘     └─────────┘     └─────────┘     └─────────┘
+     │                                                                 │
+     │                                                                 │
+     │                                                                 ▼
+     │                                                           ┌─────────┐
+     │                                                           │ Commit  │
+     │                                                           │         │
+     │                                                           └─────────┘
+     │                                                                 │
+     ▼                                                                 │
+┌─────────┐                                                            │
+│ Response│◀───────────────────────────────────────────────────────────┘
+│         │
+└─────────┘</code></pre>
+            </div>
+
+            <ol>
+                <li><strong>Transaction Creation:</strong> A client creates and signs a transaction</li>
+                <li><strong>Mempool Submission:</strong> The transaction is submitted to a node's mempool</li>
+                <li><strong>Mempool Validation:</strong> Basic validation checks are performed</li>
+                <li><strong>Consensus Processing:</strong> The consensus engine selects transactions for inclusion in a block</li>
+                <li><strong>Block Production:</strong> A validator proposes a block containing the transaction</li>
+                <li><strong>Block Validation:</strong> Other validators verify the block</li>
+                <li><strong>State Transition:</strong> The transaction is executed, and state changes are applied</li>
+                <li><strong>Commit:</strong> The new state is committed to the database</li>
+                <li><strong>Response:</strong> The client receives confirmation of the transaction</li>
+            </ol>
+
+            <h2 id="consensus-mechanism">Consensus Mechanism</h2>
+            <p>ChainOS uses a modified Tendermint BFT consensus algorithm with several optimizations:</p>
+
+            <h3 id="consensus-rounds">Consensus Rounds</h3>
+            <p>Each block production cycle consists of several steps:</p>
+            <ol>
+                <li><strong>Propose:</strong> The designated proposer creates and broadcasts a block proposal</li>
+                <li><strong>Prevote:</strong> Validators vote on whether the proposal is valid</li>
+                <li><strong>Precommit:</strong> If 2/3+ of validators prevote for the same block, they precommit to it</li>
+                <li><strong>Commit:</strong> If 2/3+ of validators precommit to the same block, it is committed</li>
+            </ol>
+
+            <div class="card">
+                <h4>Consensus Performance</h4>
+                <ul>
+                    <li><strong>Block Time:</strong> 2.37 seconds average</li>
+                    <li><strong>Finality Time:</strong> 4.5 seconds</li>
+                    <li><strong>Transaction Throughput:</strong> Up to 8,750 TPS</li>
+                    <li><strong>Fault Tolerance:</strong> Can withstand up to 1/3 of validators being Byzantine</li>
+                </ul>
+            </div>
+
+            <h3 id="validator-selection">Validator Selection</h3>
+            <p>ChainOS uses a Delegated Proof of Stake (DPoS) mechanism for validator selection:</p>
+            <ul>
+                <li>The top 100 nodes by stake amount become active validators</li>
+                <li>Stake can come from the validator's own tokens or from delegations</li>
+                <li>Validators are incentivized to maintain high uptime and performance</li>
+                <li>Malicious or faulty validators can be slashed, losing a portion of their stake</li>
+            </ul>
+
+            <h2 id="state-management">State Management</h2>
+            <p>ChainOS uses a sophisticated state management system to maintain the blockchain state:</p>
+
+            <h3 id="state-structure">State Structure</h3>
+            <p>The state is organized as a Merkleized key-value store with the following properties:</p>
+            <ul>
+                <li>Each state transition produces a new state root</li>
+                <li>The state root is included in each block header</li>
+                <li>State proofs can be generated to verify specific state entries</li>
+                <li>The state is organized into namespaces for different modules</li>
+            </ul>
+
+            <h3 id="state-pruning">State Pruning</h3>
+            <p>To manage storage requirements, ChainOS implements several pruning strategies:</p>
+            <ul>
+                <li><strong>Default:</strong> Keeps recent states for fast access and pruning older states</li>
+                <li><strong>Sync:</strong> Keeps only the most recent state, suitable for syncing nodes</li>
+                <li><strong>Archive:</strong> Keeps all historical states, suitable for data analysis</li>
+                <li><strong>Custom:</strong> Configurable pruning parameters for specific needs</li>
+            </ul>
+
+            <h2 id="security-model">Security Model</h2>
+            <p>ChainOS implements a comprehensive security model to protect the network:</p>
+
+            <h3 id="cryptographic-primitives">Cryptographic Primitives</h3>
+            <ul>
+                <li><strong>Digital Signatures:</strong> Ed25519 for transaction and message authentication</li>
+                <li><strong>Hash Functions:</strong> SHA-256 and BLAKE2b for data integrity</li>
+                <li><strong>BLS Signatures:</strong> For efficient aggregate signature verification</li>
+                <li><strong>Merkle Trees:</strong> For efficient state verification</li>
+            </ul>
+
+            <h3 id="economic-security">Economic Security</h3>
+            <ul>
+                <li><strong>Staking:</strong> Validators must stake UOS tokens as collateral</li>
+                <li><strong>Slashing:</strong> Penalties for misbehavior (double signing, downtime)</li>
+                <li><strong>Rewards:</strong> Incentives for honest participation</li>
+                <li><strong>Delegation:</strong> Token holders can delegate to validators they trust</li>
+            </ul>
+
+            <h2 id="scalability">Scalability Approach</h2>
+            <p>ChainOS addresses scalability through several approaches:</p>
+
+            <h3 id="horizontal-scaling">Horizontal Scaling</h3>
+            <ul>
+                <li><strong>Optimized Consensus:</strong> Reduced communication overhead and faster block times</li>
+                <li><strong>Parallel Transaction Processing:</strong> Multiple transactions processed simultaneously</li>
+                <li><strong>Efficient State Management:</strong> Optimized data structures for state access</li>
+                <li><strong>Network Optimizations:</strong> Efficient block propagation and peer selection</li>
+            </ul>
+
+            <h3 id="future-scaling">Future Scaling Solutions</h3>
+            <p>The ChainOS roadmap includes several advanced scaling solutions:</p>
+            <ul>
+                <li><strong>Sharding:</strong> Partitioning the network into multiple shards for parallel processing</li>
+                <li><strong>Layer 2 Solutions:</strong> Off-chain scaling solutions for specific use cases</li>
+                <li><strong>State Channels:</strong> Private payment channels for high-frequency transactions</li>
+                <li><strong>Optimistic Rollups:</strong> Batch processing of transactions with fraud proofs</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Developer Resources</h4>
+                <p>For more detailed information about the ChainOS architecture, check out these resources:</p>
+                <ul>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub Repository</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

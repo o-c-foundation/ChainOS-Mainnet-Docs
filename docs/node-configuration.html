@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Configuration - ChainOS Documentation</title>
+    <meta name="description" content="Detailed guide for configuring ChainOS nodes with optimal settings for different use cases and environments.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/ChainOS-logo.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <img src="../assets/ChainOS-logo.svg" alt="ChainOS Logo">
+                <h1>ChainOS</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="getting-started.html">Documentation</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Getting Started</div>
+                <ul class="sidebar-nav">
+                    <li><a href="getting-started.html">Introduction</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Node Operation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="node-configuration.html" class="active">Configuration</a></li>
+                    <li><a href="node-maintenance.html">Maintenance</a></li>
+                    <li><a href="node-monitoring.html">Monitoring</a></li>
+                    <li><a href="node-security.html">Security</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Validators</div>
+                <ul class="sidebar-nav">
+                    <li><a href="validators.html">Becoming a Validator</a></li>
+                    <li><a href="validator-responsibilities.html">Responsibilities</a></li>
+                    <li><a href="validator-rewards.html">Rewards & Economics</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">CLI & API</div>
+                <ul class="sidebar-nav">
+                    <li><a href="cli.html">CLI Guide</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="rpc-endpoints.html">RPC Endpoints</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h1>ChainOS Node Configuration</h1>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-title">Configuration Overview</h4>
+                <p>This guide provides detailed information on configuring your ChainOS node for optimal performance and security. Proper configuration is essential for stable node operation and network participation.</p>
+            </div>
+
+            <h2 id="configuration-files">Configuration Files</h2>
+            <p>ChainOS uses several configuration files located in the <code>~/.chainosd/config/</code> directory:</p>
+
+            <div class="card">
+                <h3>Primary Configuration Files</h3>
+                <ul>
+                    <li><strong>config.toml:</strong> Main configuration file for the node (consensus, p2p, etc.)</li>
+                    <li><strong>app.toml:</strong> Application-specific configuration (API, state sync, etc.)</li>
+                    <li><strong>client.toml:</strong> Client configuration for the CLI</li>
+                    <li><strong>genesis.json:</strong> Initial state of the blockchain</li>
+                    <li><strong>priv_validator_key.json:</strong> Private key for validator operations (validators only)</li>
+                    <li><strong>node_key.json:</strong> Private key for p2p communication</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-warning">
+                <h4 class="alert-title">Security Warning</h4>
+                <p>The <code>priv_validator_key.json</code> file contains sensitive private key information. For validators, it's crucial to secure this file properly. Consider using a Hardware Security Module (HSM) for production validators.</p>
+            </div>
+
+            <h2 id="config-toml">config.toml Configuration</h2>
+            <p>The <code>config.toml</code> file contains settings for the consensus engine and networking components. Here are the key sections and parameters:</p>
+
+            <h3 id="base-config">Base Configuration</h3>
+            <div class="code-block">
+                <pre><code># TCP or UNIX socket address of the ABCI application,
+# or the name of an ABCI application compiled in with the Tendermint binary
+proxy_app = "tcp://127.0.0.1:26658"
+
+# A custom human readable name for this node
+moniker = "my-node-name"
+
+# Database backend: goleveldb | cleveldb | boltdb | rocksdb
+# * goleveldb (github.com/syndtr/goleveldb - most popular implementation)
+# * cleveldb (uses levigo wrapper)
+# * boltdb (uses etcd's fork of bolt - github.com/etcd-io/bbolt)
+# * rocksdb (uses github.com/tecbot/gorocksdb)
+db_backend = "goleveldb"
+
+# Database directory
+db_dir = "data"
+
+# Output level for logging, including package level options
+log_level = "info"</code></pre>
+            </div>
+
+            <p>Recommended changes:</p>
+            <ul>
+                <li><strong>moniker:</strong> Set a unique, descriptive name for your node</li>
+                <li><strong>db_backend:</strong> For high-performance nodes, consider using "rocksdb"</li>
+                <li><strong>log_level:</strong> Use "info" for normal operation, "debug" for troubleshooting</li>
+            </ul>
+
+            <h3 id="rpc-config">RPC Configuration</h3>
+            <div class="code-block">
+                <pre><code>[rpc]
+# TCP or UNIX socket address for the RPC server to listen on
+laddr = "tcp://127.0.0.1:26657"
+
+# A list of origins a cross-domain request can be executed from
+# Default value '[]' disables cors support
+# Use '["*"]' to allow any origin
+cors_allowed_origins = []
+
+# Maximum number of simultaneous connections
+max_open_connections = 1000
+
+# Maximum number of unique client subscriptions
+max_subscription_clients = 100</code></pre>
+            </div>
+
+            <p>Recommended changes:</p>
+            <ul>
+                <li><strong>laddr:</strong> For public nodes, change to "tcp://0.0.0.0:26657" to allow external connections</li>
+                <li><strong>cors_allowed_origins:</strong> For API services, set appropriate CORS origins</li>
+                <li><strong>max_open_connections:</strong> Adjust based on expected load (higher for public API nodes)</li>
+            </ul>
+
+            <div class="alert alert-warning">
+                <h4 class="alert-title">Security Note</h4>
+                <p>When exposing RPC endpoints publicly, ensure you have proper firewall rules and rate limiting in place to prevent abuse.</p>
+            </div>
+
+            <h3 id="p2p-config">P2P Configuration</h3>
+            <div class="code-block">
+                <pre><code>[p2p]
+# Address to listen for incoming connections
+laddr = "tcp://0.0.0.0:26656"
+
+# Maximum number of inbound peers
+max_num_inbound_peers = 40
+
+# Maximum number of outbound peers to connect to, excluding persistent peers
+max_num_outbound_peers = 10
+
+# List of node IDs, to which a connection will be (re)established ignoring any existing limits
+unconditional_peer_ids = ""
+
+# Comma separated list of peer IDs to keep private (will not be gossiped to other peers)
+private_peer_ids = ""
+
+# Toggle to disable guard against peers connecting from the same ip
+allow_duplicate_ip = false
+
+# Peer connection configuration
+handshake_timeout = "20s"
+dial_timeout = "3s"
+
+# Comma separated list of seed nodes to connect to
+seeds = "2b89c755963a03a2a2c846d5efb97c06e6d2cdfe@seed.chainos.network:26656,3b89c755963a03a2a2c846d5efb97c06e6d2cdfe@seed2.chainos.network:26656"
+
+# Comma separated list of nodes to keep persistent connections to
+persistent_peers = "2b89c755963a03a2a2c846d5efb97c06e6d2cdfe@chainos.network:26656"</code></pre>
+            </div>
+
+            <p>Recommended changes:</p>
+            <ul>
+                <li><strong>max_num_inbound_peers, max_num_outbound_peers:</strong> Increase for better network connectivity (60/20 for validators)</li>
+                <li><strong>seeds, persistent_peers:</strong> Update with reliable seed nodes and peers</li>
+                <li><strong>handshake_timeout, dial_timeout:</strong> Increase for nodes with slower network connections</li>
+            </ul>
+
+            <h3 id="consensus-config">Consensus Configuration</h3>
+            <div class="code-block">
+                <pre><code>[consensus]
+# How long we wait for a proposal block before prevoting nil
+timeout_propose = "3s"
+# How long we wait after receiving +2/3 prevotes for "anything" (i.e. not a single block or nil)
+timeout_prevote = "1s"
+# How long we wait after receiving +2/3 precommits for "anything" (i.e. not a single block or nil)
+timeout_precommit = "1s"
+# How long we wait after committing a block, before starting on the new height
+timeout_commit = "1s"
+
+# Make progress as soon as we have all the precommits (as if TimeoutCommit = 0)
+skip_timeout_commit = false
+
+# EmptyBlocks mode and possible interval between empty blocks
+create_empty_blocks = true
+create_empty_blocks_interval = "0s"</code></pre>
+            </div>
+
+            <p>Recommended changes:</p>
+            <ul>
+                <li><strong>timeout_commit:</strong> Default is optimal for most cases</li>
+                <li><strong>create_empty_blocks:</strong> Set to false to reduce chain bloat (but may affect some applications)</li>
+            </ul>
+
+            <h3 id="statesync-config">State Sync Configuration</h3>
+            <div class="code-block">
+                <pre><code>[statesync]
+# State sync rapidly bootstraps a new node by discovering, fetching, and restoring a state machine
+# snapshot from peers instead of fetching and replaying historical blocks
+enable = false
+
+# RPC servers (comma-separated) for light client verification of the synced state machine and
+# retrieval of state data for node bootstrapping
+rpc_servers = "chainos.network:26657,chainos-backup.network:26657"
+
+# Trusted block height
+trust_height = 0
+
+# Trusted block hash
+trust_hash = ""
+
+# Trusted block header provider
+trust_period = "168h0m0s"</code></pre>
+            </div>
+
+            <p>To enable state sync (for faster node synchronization):</p>
+            <ol>
+                <li>Set <code>enable = true</code></li>
+                <li>Set <code>rpc_servers</code> to reliable RPC endpoints</li>
+                <li>Get a recent block height and its hash from a trusted source</li>
+                <li>Set <code>trust_height</code> to that block height</li>
+                <li>Set <code>trust_hash</code> to that block's hash</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <h4 class="alert-title">State Sync Tip</h4>
+                <p>You can get a recent block height and hash by running:</p>
+                <code>curl -s "chainos.network:26657/block?height=3500000" | jq -r '.result.block_id.hash'</code>
+                <p>Replace 3500000 with a recent block height.</p>
+            </div>
+
+            <h2 id="app-toml">app.toml Configuration</h2>
+            <p>The <code>app.toml</code> file contains application-specific settings. Here are the key sections:</p>
+
+            <h3 id="api-config">API Configuration</h3>
+            <div class="code-block">
+                <pre><code>[api]
+# Enable defines if the API server should be enabled.
+enable = true
+
+# Address defines the API server to listen on.
+address = "tcp://0.0.0.0:1317"
+
+# EnableUnsafeCORS defines if CORS should be enabled (unsafe - use it at your own risk).
+enabled-unsafe-cors = false</code></pre>
+            </div>
+
+            <p>Recommended changes:</p>
+            <ul>
+                <li><strong>enable:</strong> Set to true to enable the REST API</li>
+                <li><strong>address:</strong> Change to "tcp://127.0.0.1:1317" for local-only access, or "tcp://0.0.0.0:1317" for public access</li>
+                <li><strong>enabled-unsafe-cors:</strong> Only enable if you need cross-origin requests (with proper security measures)</li>
+            </ul>
+
+            <h3 id="grpc-config">gRPC Configuration</h3>
+            <div class="code-block">
+                <pre><code>[grpc]
+# Enable defines if the gRPC server should be enabled.
+enable = true
+
+# Address defines the gRPC server address to bind to.
+address = "0.0.0.0:9090"</code></pre>
+            </div>
+
+            <p>Recommended changes:</p>
+            <ul>
+                <li><strong>enable:</strong> Set to true if you need gRPC services</li>
+                <li><strong>address:</strong> Change to "127.0.0.1:9090" for local-only access</li>
+            </ul>
+
+            <h3 id="telemetry-config">Telemetry Configuration</h3>
+            <div class="code-block">
+                <pre><code>[telemetry]
+# Enabled enables the application telemetry functionality. When enabled,
+# an in-memory sink is also enabled by default. Operators may also enabled
+# other sinks such as Prometheus.
+enabled = true
+
+# Enable prefixing gauge values with hostname.
+enable-hostname = false
+
+# Enable adding hostname to labels.
+enable-hostname-label = false
+
+# Enable adding service to labels.
+enable-service-label = false
+
+# PrometheusRetentionTime, when positive, enables a Prometheus metrics sink.
+prometheus-retention-time = 0</code></pre>
+            </div>
+
+            <p>Recommended changes:</p>
+            <ul>
+                <li><strong>enabled:</strong> Set to true to enable metrics collection</li>
+                <li><strong>prometheus-retention-time:</strong> Set to 60 (seconds) to enable Prometheus metrics</li>
+            </ul>
+
+            <h3 id="pruning-config">Pruning Configuration</h3>
+            <div class="code-block">
+                <pre><code>[pruning]
+# Pruning strategy:
+# - "nothing": All historic states will be saved, nothing will be deleted (i.e. archiving node).
+# - "everything": All saved states will be deleted, storing only the current state.
+# - "custom": Allow pruning options to be manually specified through 'pruning-keep-recent',
+#   'pruning-keep-every', and 'pruning-interval'.
+pruning = "default"
+
+# These are applied if and only if the pruning strategy is custom.
+pruning-keep-recent = "100"
+pruning-keep-every = "0"
+pruning-interval = "10"</code></pre>
+            </div>
+
+            <p>Recommended settings for different node types:</p>
+            <ul>
+                <li><strong>Archive Node:</strong> Set <code>pruning = "nothing"</code></li>
+                <li><strong>Full Node:</strong> Use default settings</li>
+                <li><strong>Validator Node:</strong> Set <code>pruning = "custom"</code> with <code>pruning-keep-recent = "100"</code></li>
+                <li><strong>Resource-Constrained Node:</strong> Set <code>pruning = "everything"</code> (minimal storage requirements)</li>
+            </ul>
+
+            <h2 id="client-toml">client.toml Configuration</h2>
+            <p>The <code>client.toml</code> file contains settings for the CLI client:</p>
+
+            <div class="code-block">
+                <pre><code># Chain ID to sign with
+chain-id = "chainos-1"
+
+# Keyring backend, options: os|file|kwallet|pass|test|memory
+keyring-backend = "os"
+
+# CLI output format (text|json)
+output = "text"
+
+# Node to connect to
+node = "tcp://localhost:26657"
+
+# Transaction broadcast mode (sync|async|block)
+broadcast-mode = "sync"</code></pre>
+            </div>
+
+            <p>Recommended changes:</p>
+            <ul>
+                <li><strong>chain-id:</strong> Set to the correct chain ID ("chainos-1" for mainnet)</li>
+                <li><strong>keyring-backend:</strong> Use "file" for better security on servers</li>
+                <li><strong>node:</strong> Set to your preferred RPC endpoint</li>
+                <li><strong>broadcast-mode:</strong> Use "sync" for normal operations, "block" when you need immediate confirmation</li>
+            </ul>
+
+            <h2 id="optimization">Performance Optimization</h2>
+            <p>Here are some recommended configurations for different types of nodes:</p>
+
+            <h3 id="validator-config">Validator Node Configuration</h3>
+            <div class="card">
+                <h4>Recommended Settings</h4>
+                <ul>
+                    <li><strong>db_backend:</strong> "rocksdb" for better performance</li>
+                    <li><strong>max_num_inbound_peers:</strong> 60</li>
+                    <li><strong>max_num_outbound_peers:</strong> 20</li>
+                    <li><strong>pruning:</strong> "custom" with pruning-keep-recent = "100"</li>
+                    <li><strong>indexer:</strong> "null" (disable indexing to save resources)</li>
+                    <li><strong>persistent_peers:</strong> Add multiple reliable peers</li>
+                </ul>
+            </div>
+
+            <h3 id="api-node-config">API Node Configuration</h3>
+            <div class="card">
+                <h4>Recommended Settings</h4>
+                <ul>
+                    <li><strong>api.enable:</strong> true</li>
+                    <li><strong>api.address:</strong> "tcp://0.0.0.0:1317" (with proper firewall rules)</li>
+                    <li><strong>grpc.enable:</strong> true</li>
+                    <li><strong>grpc.address:</strong> "0.0.0.0:9090" (with proper firewall rules)</li>
+                    <li><strong>rpc.max_open_connections:</strong> 1000 or higher</li>
+                    <li><strong>pruning:</strong> "default" or "custom" with larger keep-recent value</li>
+                    <li><strong>indexer:</strong> "kv" (enable indexing for API queries)</li>
+                </ul>
+            </div>
+
+            <h3 id="archive-node-config">Archive Node Configuration</h3>
+            <div class="card">
+                <h4>Recommended Settings</h4>
+                <ul>
+                    <li><strong>pruning:</strong> "nothing" (keep all historical states)</li>
+                    <li><strong>indexer:</strong> "kv" (enable indexing for historical queries)</li>
+                    <li><strong>state_sync.enable:</strong> false (archive nodes should sync from genesis)</li>
+                    <li><strong>db_backend:</strong> "rocksdb" for better performance with large datasets</li>
+                </ul>
+            </div>
+
+            <h2 id="advanced-config">Advanced Configuration</h2>
+            <p>For advanced users, here are some additional configuration options:</p>
+
+            <h3 id="custom-indexer">Custom Indexer Configuration</h3>
+            <div class="code-block">
+                <pre><code>[tx_index]
+# What indexer to use for transactions
+#
+# The application will set which txs to index. In some cases a node operator will be able
+# to decide which txs to index based on configuration set in the application.
+#
+# Options:
+#   1) "null"
+#   2) "kv" (default) - the simplest possible indexer, backed by key-value storage (defaults to levelDB; see DBBackend).
+# 		- When "kv" is chosen "tx.height" and "tx.hash" will always be indexed.
+indexer = "kv"
+
+# The events to index.
+# Example:
+# index_events = ["message.sender", "message.recipient"]
+index_events = []</code></pre>
+            </div>
+
+            <p>For better transaction querying capabilities:</p>
+            <ul>
+                <li>Set <code>indexer = "kv"</code></li>
+                <li>Add relevant events to <code>index_events</code>, such as <code>["message.sender", "message.recipient", "transfer.recipient"]</code></li>
+            </ul>
+
+            <h3 id="mempool-config">Mempool Configuration</h3>
+            <div class="code-block">
+                <pre><code>[mempool]
+# Maximum number of transactions in the mempool
+size = 5000
+
+# Maximum size of a single transaction
+max_tx_bytes = 1048576
+
+# Maximum size of all transactions in the mempool
+max_txs_bytes = 1073741824
+
+# Size of the cache (used to filter transactions we saw earlier)
+cache_size = 10000</code></pre>
+            </div>
+
+            <p>For high-throughput nodes:</p>
+            <ul>
+                <li>Increase <code>size</code> to 10000 or higher</li>
+                <li>Increase <code>cache_size</code> to 20000 or higher</li>
+            </ul>
+
+            <h2 id="configuration-examples">Configuration Examples</h2>
+            <p>Here are some example configurations for different node types:</p>
+
+            <h3 id="validator-example">Validator Node Example</h3>
+            <div class="code-block">
+                <pre><code># config.toml
+[rpc]
+laddr = "tcp://127.0.0.1:26657"  # Local access only for security
+
+[p2p]
+laddr = "tcp://0.0.0.0:26656"
+max_num_inbound_peers = 60
+max_num_outbound_peers = 20
+persistent_peers = "2b89c755963a03a2a2c846d5efb97c06e6d2cdfe@chainos.network:26656,3b89c755963a03a2a2c846d5efb97c06e6d2cdfe@chainos-backup.network:26656"
+
+[mempool]
+size = 10000
+cache_size = 20000
+
+[tx_index]
+indexer = "null"  # Save resources by disabling indexing
+
+# app.toml
+[pruning]
+pruning = "custom"
+pruning-keep-recent = "100"
+pruning-keep-every = "0"
+pruning-interval = "10"
+
+[api]
+enable = false  # Disable API for security
+
+[grpc]
+enable = false  # Disable gRPC for security
+
+[telemetry]
+enabled = true
+prometheus-retention-time = 60  # Enable Prometheus metrics</code></pre>
+            </div>
+
+            <h3 id="api-node-example">API Node Example</h3>
+            <div class="code-block">
+                <pre><code># config.toml
+[rpc]
+laddr = "tcp://0.0.0.0:26657"  # Public access
+max_open_connections = 1000
+cors_allowed_origins = ["*"]  # Allow all origins (with proper security measures)
+
+[p2p]
+laddr = "tcp://0.0.0.0:26656"
+max_num_inbound_peers = 40
+max_num_outbound_peers = 10
+
+[tx_index]
+indexer = "kv"
+index_events = ["message.sender", "message.recipient", "transfer.recipient"]
+
+# app.toml
+[pruning]
+pruning = "default"
+
+[api]
+enable = true
+address = "tcp://0.0.0.0:1317"
+enabled-unsafe-cors = true  # Enable CORS (with proper security measures)
+
+[grpc]
+enable = true
+address = "0.0.0.0:9090"
+
+[telemetry]
+enabled = true
+prometheus-retention-time = 60</code></pre>
+            </div>
+
+            <div class="alert alert-success">
+                <h4 class="alert-title">Need Help?</h4>
+                <p>If you need assistance with your node configuration, join our <a href="https://discord.gg/opencrypto" target="_blank">Discord community</a> where our team and other node operators can help.</p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>ChainOS</h3>
+                <p>A revolutionary high-throughput distributed ledger platform with advanced consensus mechanisms.</p>
+                <div class="social-links">
+                    <a href="https://twitter.com/opencryptofdn" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://discord.gg/opencrypto" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://t.me/ocfcommunity" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://github.com/o-c-foundation" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Documentation</h3>
+                <ul class="footer-links">
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="architecture.html">Architecture</a></li>
+                    <li><a href="node-setup.html">Node Setup</a></li>
+                    <li><a href="validators.html">Validators</a></li>
+                    <li><a href="cli.html">CLI Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/o-c-foundation/ChainOS--Mainnet" target="_blank">GitHub</a></li>
+                    <li><a href="api.html">API Reference</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="https://opencryptofoundation.com/" target="_blank">Open Crypto Foundation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2025 Open Crypto Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>
